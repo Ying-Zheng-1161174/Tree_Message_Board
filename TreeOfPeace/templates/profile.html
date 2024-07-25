@@ -1,0 +1,162 @@
+{% extends 'base.html' %} {% block content %} {% if mode == 'edit' %}
+<h1>Edit profile</h1>
+<!-- edit profile -->
+<form
+  action="{{ url_for('profile') }}"
+  method="POST"
+  enctype="multipart/form-data"
+  class="needs-validation"
+  novalidate>
+  <div>
+    <p>Edit image</p>
+    <div id="profile_image_wrapper">
+      {% if account['profile_image'] %}
+      <div>
+        <img
+          id="profile_image"
+          src="{{ url_for('static', filename=account['profile_image']) }}"
+          alt="profile_image"
+          width="100px"
+          height="100px" />
+        <div id="image_buttons">
+          <button
+            type="button"
+            onclick="document.getElementById('profile_image_input').click();">
+            Change picture
+          </button>
+          <button type="button" id="remove_image_button">Delete</button>
+        </div>
+        {% else %}
+        <button
+          type="button"
+          id="add_image_button"
+          onclick="document.getElementById('profile_image_input').click();">
+          Add image
+        </button>
+        {% endif %}
+      </div>
+    </div>
+    <input
+      type="file"
+      name="profile_image"
+      id="profile_image_input"
+      class="hidden"
+      accept="image/*" />
+    <input type="hidden" name="remove_image" id="remove_image" value="false" />
+  </div>
+
+  <div class="mb-3">
+    <label for="location" class="form-label">Email</label>
+    <input
+      type="email"
+      name="email"
+      id="email"
+      placeholder="Email"
+      value="{{ account['email'] }}"
+      pattern="[^@]+@[^@]+\.[^@]+"
+      class="form-control"
+      required />
+    <div class="invalid-feedback">Invalid email address</div>
+  </div>
+  <div class="mb-3">
+    <label for="firstname" class="form-label">First Name</label>
+    <input
+      type="text"
+      name="firstname"
+      id="firstname"
+      placeholder="First Name"
+      value="{{ account['first_name'] }}"
+      pattern="[A-Za-z]*"
+      class="form-control"
+      required />
+    <div class="invalid-feedback">Please enter letters (a-z,A-Z) only</div>
+  </div>
+  <div class="mb-3">
+    <label for="lastname" class="form-label">Last Name</label>
+    <input
+      type="text"
+      name="lastname"
+      id="lastname"
+      placeholder="Last Name"
+      value="{{ account['last_name'] }}"
+      pattern="[A-Za-z]*"
+      class="form-control"
+      required />
+    <div class="invalid-feedback">Please enter letters (a-z,A-Z) only</div>
+  </div>
+  <div class="mb-3">
+    <label for="birthdate" class="form-label">Date of Birth</label>
+    <input
+      type="date"
+      name="birthdate"
+      id="birthdate"
+      max="{{currentdate}}"
+      value="{{currentdate}}"
+      placeholder="Date of Birth"
+      value="{{ account['birth_date'] }}"
+      class="form-control"
+      required />
+    <div class="invalid-feedback">Please select a past date</div>
+  </div>
+  <div class="mb-3">
+    <label for="location" class="form-label">Location</label>
+    <input
+      type="text"
+      name="location"
+      id="location"
+      placeholder="Location"
+      value="{{ account['location'] }}"
+      class="form-control"
+      required />
+    <div class="invalid-feedback">Location cannot be empty</div>
+  </div>
+  <button type="submit" class="btn btn-primary">Save</button>
+  <a href="{{ url_for('profile') }}">Cancel</a>
+</form>
+
+<!-- view mode -->
+{% else %}
+<h1>profile</h1>
+<div>
+  {% if (account['profile_image'] != none) %}
+  <p>profile image:</p>
+  <img
+    src="{{ url_for('static', filename=account['profile_image']) }}"
+    alt="profile_image"
+    width="100px"
+    height="100px" />
+  {% else %}
+  <p>profile image: None</p>
+  {% endif %}
+  <table>
+    <tr>
+      <td>Username:</td>
+      <td>{{ account['username']}}</td>
+    </tr>
+    <tr>
+      <td>First Name:</td>
+      <td>{{ account['first_name']}}</td>
+    </tr>
+    <tr>
+      <td>Last Name:</td>
+      <td>{{ account['last_name']}}</td>
+    </tr>
+    <tr>
+      <td>Date Of Birth:</td>
+      <td>{{ account['birth_date']}}</td>
+    </tr>
+    <tr>
+      <td>Location:</td>
+      <td>{{ account['location']}}</td>
+    </tr>
+    <tr>
+      <td>Role:</td>
+      <td>{{ account['role']}}</td>
+    </tr>
+  </table>
+  <button>
+    <a href="{{ url_for('profile', mode = 'edit') }}">Edit Profile</a>
+  </button>
+</div>
+
+{% endif %} {% endblock %}

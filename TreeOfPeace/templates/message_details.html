@@ -1,0 +1,58 @@
+{% extends 'base.html' %} {% block title %} Tree of Peace{%endblock%} {% block
+content %}
+<header></header>
+{% if message %}
+<h1>{{ message.title }}</h1>
+<div>
+  <div>
+    {% if message.image %}
+    <img
+      src="{{ url_for('static', filename=message.image) }}"
+      alt="profile_image"
+      width="20" />
+    {% endif %}
+    <span>Posted by: {{ message.username }}</span>
+    <span>{{ message.message_created_at | format_date }}</span>
+    <p>{{ message.message_content }}</p>
+  </div>
+  <h2>Replies</h2>
+  {% if message.replies %}
+  <div>
+    <ul>
+      {% for reply in message.replies %}
+      <div>
+        <li>
+          <p>{{ reply.reply_content }}</p>
+          {% if reply.reply_image %}
+          <img
+            src="{{ url_for('static', filename=reply.reply_image) }}"
+            alt="profile_image"
+            width="20" />
+          {% endif %}
+          <span>{{ reply.reply_username }}</span>
+          <span>{{ reply.reply_created_at }}</span>
+        </li>
+      </div>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <p>No replies yet</p>
+    {% endif %} {% else %}
+    <p>Message not found</p>
+    {% endif %}
+  </div>
+  <form
+    action="{{ url_for('add_reply', message_id=message.message_id) }}"
+    method="POST"
+    class="needs-validation"
+    novalidate>
+    <textarea name="reply_content" required></textarea>
+    <div class="invalid-feedback">Reply cannot be empty</div>
+    {% if error %}
+    <div class="error">{{ error }}</div>
+    {% endif %}
+    <br />
+    <button type="submit">Reply</button>
+  </form>
+</div>
+{% endblock%}
