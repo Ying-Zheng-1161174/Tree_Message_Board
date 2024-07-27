@@ -1,8 +1,9 @@
-{% extends 'base.html' %} {% block content %} {% if mode == 'edit' %}
+{% extends 'base.html' %} {% block title %}Profile{%endblock%} {% block content
+%} {% if mode == 'edit' %}
 <h1>Edit profile</h1>
 <!-- edit profile -->
 <form
-  action="{{ url_for('profile') }}"
+  action="{{ url_for('profile', username=account['username']) }}"
   method="POST"
   enctype="multipart/form-data"
   class="needs-validation"
@@ -111,12 +112,17 @@
     <div class="invalid-feedback">Location cannot be empty</div>
   </div>
   <button type="submit" class="btn btn-primary">Save</button>
-  <a href="{{ url_for('profile') }}">Cancel</a>
+  <a href="{{ url_for('profile', username=session['username']) }}">Cancel</a>
 </form>
-
 <!-- view mode -->
 {% else %}
 <h1>profile</h1>
+{% if msg %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  {{ msg }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
 <div>
   {% if (account['profile_image'] != none) %}
   <p>profile image:</p>
@@ -149,14 +155,50 @@
       <td>Location:</td>
       <td>{{ account['location']}}</td>
     </tr>
-    <tr>
-      <td>Role:</td>
-      <td>{{ account['role']}}</td>
-    </tr>
   </table>
+  {% if session['username'] == account['username'] %}
+  <div>
   <button>
-    <a href="{{ url_for('profile', mode = 'edit') }}">Edit Profile</a>
+    <a
+      href="{{ url_for('profile', username=account['username'], mode='edit') }}">
+      Edit Profile
+    </a>
   </button>
+  </div>
+  {% endif %}
 </div>
+<div>
+  {% if session['role'] == 'admin' %}
+    <form action="{{ url_for('admin', username = account['username']) }}" method="POST">
+      <table>
+        <tr>
+          <td><label for="role">Role:</label></td>
+            <td>
+              <select name="role" id="role">
+                <option value="admin" {{ 'selected' if account.role == 'admin' else '' }}>Admin</option>
+                <option value="moderator" {{ 'selected' if account.role == 'moderator' else '' }}>Moderator</option>
+                <option value="member" {{ 'selected' if account.role == 'member' else '' }}>Member</option>
+              </select>
+            </td>
+        </tr>
+        <tr>
+          <td><label for="status">Status</label></td>
+            <td>
+              <select name="status" id="status">
+                <option value="active" {{ 'selected' if account.status == 'active' else '' }}>Active</option>
+                <option value="inactive" {{ 'selected' if account.status == 'inactive' else '' }}>Inactive</option>
+              </select>
+            </td>
+        </tr>
+        <tr>
+          <td>
+            <button type="submit">Save</button>
+          </td>
+        </tr>
+      </table>
+    </form>
+  {% endif %}
+</div>
+
 
 {% endif %} {% endblock %}

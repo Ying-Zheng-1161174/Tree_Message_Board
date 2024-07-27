@@ -47,19 +47,43 @@
             </li>
             {% else %}
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('profile') }}">Profile</a>
+              <a
+                class="nav-link"
+                href="{{ url_for('profile', username=session['username']) }}">
+                Profile
+              </a>
             </li>
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('logout') }}">Log out</a>
             </li>
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('change_password') }}">
+              <a
+                class="nav-link"
+                href="{{ url_for('change_password', username=session['username']) }}">
                 Change password
               </a>
             </li>
-            {% endif %}
             <li class="nav-item">
-              <a class="nav-link" href="{{ url_for('add_message') }}">
+              <a
+                href="{{ url_for('user_messages', username=session['username']) }}">
+                Messages
+              </a>
+            </li>
+            <li class="nav-item">
+              <a
+                href="{{ url_for('user_replies', username=session['username']) }}">
+                Replies
+              </a>
+            </li>
+            {% if session['role'] == 'admin' %}
+            <li class="nav-item">
+              <a href="{{ url_for('admin') }}">Users</a>
+            </li>
+            {% endif %} {% endif %}
+            <li class="nav-item">
+              <a
+                class="nav-link"
+                href="{{ url_for('add_message', username=session['username']) }}">
                 Create post
               </a>
             </li>

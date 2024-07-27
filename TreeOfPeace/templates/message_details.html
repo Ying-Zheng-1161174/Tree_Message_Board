@@ -1,6 +1,6 @@
-{% extends 'base.html' %} {% block title %} Tree of Peace{%endblock%} {% block
-content %}
-<header></header>
+{% extends 'base.html' %} {% block title %}Messages{%endblock%} {% block content
+%}
+<header>Message details</header>
 {% if message %}
 <h1>{{ message.title }}</h1>
 <div>
@@ -14,6 +14,15 @@ content %}
     <span>Posted by: {{ message.username }}</span>
     <span>{{ message.message_created_at | format_date }}</span>
     <p>{{ message.message_content }}</p>
+    {% if message.username == session['username'] or session['role'] in
+    ['moderator','admin'] %}
+    <form
+      action="{{ url_for('user_messages', username = session['username']) }}"
+      method="POST">
+      <input type="hidden" name="message_id" value="{{ message.message_id }}" />
+      <button type="submit" onclick="return confirmDelete();">Delete</button>
+    </form>
+    {% endif %}
   </div>
   <h2>Replies</h2>
   {% if message.replies %}
@@ -32,6 +41,21 @@ content %}
           <span>{{ reply.reply_username }}</span>
           <span>{{ reply.reply_created_at }}</span>
         </li>
+        {% if reply.reply_username == session['username'] or session['role'] in
+        ['moderator','admin'] %}
+        <form
+          action="{{ url_for('user_replies', username = session['username']) }}"
+          method="POST">
+          <input type="hidden" name="reply_id" value="{{ reply.reply_id }}" />
+          <input
+            type="hidden"
+            name="message_id"
+            value="{{ message.message_id }}" />
+          <button type="submit" onclick="return confirmDelete();">
+            Delete
+          </button>
+        </form>
+        {% endif %}
       </div>
       {% endfor %}
     </ul>
@@ -55,4 +79,5 @@ content %}
     <button type="submit">Reply</button>
   </form>
 </div>
+<script src="{{ url_for('static', filename='js/confirmDelete.js') }}"></script>
 {% endblock%}

@@ -86,6 +86,7 @@ def message_detail(message_id):
                     m.title,
                     m.content AS message_content, 
                     m.created_at AS message_created_at, 
+                    reply_id,
                     r.content AS reply_content, 
                     r.created_at AS reply_created_at,
                     r.user_id AS reply_user_id,
@@ -118,6 +119,7 @@ def message_detail(message_id):
             # if there is a reply
             if detail ['reply_content']:
                 message['replies'].append({
+                    'reply_id': detail['reply_id'],
                     'reply_content': detail['reply_content'],
                     'reply_created_at': format_date(detail['reply_created_at']),
                     'reply_username': detail['reply_username'],
@@ -140,8 +142,10 @@ def add_reply(message_id):
         else:
             cursor = getCursor()
             try:
-                cursor.execute('INSERT INTO replies (message_id, user_id, content, created_at) VALUES (%s, %s, %s, CURRENT_TIMESTAMP)', 
-                            (message_id, user_id, reply_content))
+                cursor.execute('''
+                               INSERT INTO replies (message_id, user_id, content, created_at) 
+                               VALUES (%s, %s, %s, CURRENT_TIMESTAMP)
+                               ''', (message_id, user_id, reply_content))
                 db_connection.commit()
                 return redirect(url_for('message_detail', message_id=message_id))
             except Exception as e:
@@ -151,7 +155,8 @@ def add_reply(message_id):
         return redirect(url_for('login'))
 
 @app.route('/add_message', methods=['GET', 'POST'])
-def add_message():
+@app.route('/<username>/add_message', methods=['GET', 'POST'])
+def add_message(username = None):
     if 'loggedin' in session:
         if request.method == 'GET':
             return render_template('add_message.html')
@@ -165,8 +170,9 @@ def add_message():
             else:
                 cursor = getCursor()
                 try:
-                    cursor.execute('INSERT INTO messages (user_id, title, content, created_at) VALUES (%s, %s, %s, CURRENT_TIMESTAMP)',
-                                (user_id, title, content))
+                    cursor.execute('''
+                                   INSERT INTO messages (user_id, title, content, created_at) 
+                                   VALUES (%s, %s, %s, CURRENT_TIMESTAMP)''', (user_id, title, content))
                     db_connection.commit()
 
                     # Get message id 
@@ -181,6 +187,108 @@ def add_message():
     else:
         return redirect(url_for('login'))
 
+@app.route('/<username>/messages', methods=['GET', 'POST'])
+def user_messages(username):
+    cursor = getCursor()
+    if 'loggedin' in session:
+        if request.method == 'GET':
+            try:
+                cursor.execute('SELECT message_id, title, created_at FROM messages WHERE user_id = %s', (session['id'],))
+                messages = cursor.fetchall()
+                return render_template('user_messages.html', messages = messages)
+            except Exception as e:
+                return f'An error occurred: {str(e)}' 
+        else:
+            messageID = request.form['message_id']
+            if username == session['username'] or session['role'] in ['moderator','admin']:
+                try:
+                    # Delete message and replies (ON DELETE CASCADE)
+                    cursor.execute('DELETE FROM messages WHERE message_id = %s', (messageID,))
+                    db_connection.commit()
+                    if session['role'] in ['moderator','admin']:
+                        return redirect(url_for('home'))
+                    else:
+                        return redirect(url_for('user_messages', username = session['username']))
+                except Exception as e:
+                    return f'An error occurred: {str(e)}' 
+    else:
+        return redirect(url_for('login'))
+
+@app.route('/<username>/replies', methods=['GET', 'POST'])
+def user_replies(username):
+    cursor = getCursor()
+    if 'loggedin' in session:
+        if request.method == 'GET':
+            try:
+                cursor.execute('SELECT reply_id, message_id, content, created_at FROM replies WHERE user_id = %s', (session['id'],))
+                replies = cursor.fetchall()
+                return render_template('user_replies.html', replies = replies)
+            except Exception as e:
+                return f'An error occurred: {str(e)}' 
+        else:
+            replyID = request.form['reply_id']
+            messageID = request.form['message_id']
+            if username == session['username'] or session['role'] in ['moderator','admin']:
+                try:
+                    # Delete message and replies (ON DELETE CASCADE)
+                    cursor.execute('DELETE FROM replies WHERE reply_id = %s', (replyID,))
+                    db_connection.commit()
+                    if session['role'] in ['moderator','admin']:
+                        return redirect(url_for('message_detail', message_id= messageID))
+                    else:
+                        return redirect(url_for('user_replies', username = session['username']))
+                except Exception as e:
+                    return f'An error occurred: {str(e)}' 
+    else:
+        return redirect(url_for('login'))
+    
+@app.route('/admin', methods=['GET'])
+@app.route('/admin/<username>', methods=['GET','POST'])
+def admin(username=None):
+    cursor = getCursor()
+    if 'loggedin' in session and session['role'] == 'admin':
+        if request.method == 'GET':
+            if username is None:
+                # Handle search 
+                search = request.args.get('search', '')
+                # For full name search, split search string into a list based on the space
+                searchParts = search.split(' ')
+               
+                if search:
+                    if len(searchParts) == 1:
+                        cursor.execute('''
+                                    SELECT username, first_name, last_name, profile_image, location FROM users 
+                                    WHERE username LIKE %s 
+                                    OR first_name LIKE %s
+                                    OR last_name LIKE %s
+                                    ''', (f'%{search}%', f'%{search}%', f'%{search}%'))
+                    elif len(searchParts) >= 2:
+                        cursor.execute('''
+                                    SELECT username, first_name, last_name, profile_image, location FROM users 
+                                    WHERE first_name LIKE %s AND last_name LIKE %s
+                                    ''', (f'%{searchParts[0]}%', f'%{searchParts[1]}%'))
+                else:
+                    # List all users
+                    cursor.execute('SELECT username, first_name, last_name, profile_image, location FROM users')
+               
+                users = cursor.fetchall()
+                return render_template('user_list.html', users = users, search = search)
+            else:
+                return redirect(url_for('profile', username = username))
+            
+        elif request.method == 'POST' and username is not None:
+            role = request.form['role']
+            status = request.form['status']
+            try:
+                cursor.execute('UPDATE users SET role = %s, status = %s WHERE username = %s', 
+                                (role, status, username))
+                db_connection.commit()
+                session['message'] = 'Change saved!'
+                return redirect(url_for('profile', username = username))
+            except Exception as e:
+                return f'An error occurred: {str(e)}'
+    else:
+        return render_template('error.html', error = 'Access Denied')
 
 @app.route('/register', methods=['GET','POST'])
 def register():
@@ -231,14 +339,15 @@ def register():
                                 (userName, password_hash, email, firstName, lastName, birthDate, location, DEFAULT_IMAGE, DEFAULT_ROLE, DEFAULT_STATUS ))
                 db_connection.commit()
                 
-                cursor.execute('SELECT user_id, role FROM users WHERE username = %s', (userName,))
+                cursor.execute('SELECT user_id, username, role FROM users WHERE username = %s', (userName,))
                 account = cursor.fetchone()
 
                 if account:
                     session['loggedin'] = True
                     session['id'] = account['user_id']
+                    session['username'] = account['username']
                     session['role'] = account['role']
-                    return redirect(url_for('home'))
+                    return render_template('success_redirect.html', success='Registration successful!')
                 else:
                     error = 'Failed to create account, please try again'
 
@@ -269,6 +378,7 @@ def login():
                 # If password correct, create session data
                 session['loggedin'] = True
                 session['id'] = account['user_id']
+                session['username'] = account['username']
                 session['role'] = account['role']
                 # redirect to home page
                 return redirect(url_for('home'))
@@ -278,11 +388,12 @@ def login():
         except Exception as e:
             return f'An error occurred: {str(e)}'
 
-@app.route('/profile', methods=['GET', 'POST'])
-def profile():
+@app.route('/<username>/profile', methods=['GET', 'POST'])
+def profile(username):
     cursor = getCursor()
+
     # Check if user is logged in
-    if 'loggedin' in session:
+    if 'loggedin' in session or session['role'] == 'admin':
         if request.method == 'POST':
             # Update user's profile
             email = request.form['email']
@@ -305,26 +416,27 @@ def profile():
                 # Retrieve the current profile image path from the database
                 cursor.execute('SELECT profile_image FROM users WHERE user_id = %s', (session['id'],))
                 current_image = cursor.fetchone()
-                profileImagePath = current_image['profile_image']
-
-            
+                profileImagePath = current_image['profile_image']            
 
             try:
                 cursor.execute('UPDATE users SET email = %s, first_name = %s, last_name = %s, birth_date = %s, location = %s, profile_image = %s WHERE user_id = %s', 
                                (email, firstName, lastName, birthDate, location, profileImagePath, session['id']))
                 db_connection.commit()
-                return redirect(url_for('profile'))
+                session['message'] = 'Profile updated successfully!'
+      
+                return redirect(url_for('profile', username=session['username']))
             except Exception as e:
                 return f'An error occurred: {str(e)}'
         
         # If it is a Get request, display user information 
         try:
-            cursor.execute('SELECT username, email, first_name, last_name, birth_date, location, profile_image, role FROM users WHERE user_id = %s', (session['id'],))
+            cursor.execute('SELECT * FROM users WHERE username = %s', (username,))
             account = cursor.fetchone()
-
+            msg = session.pop('message', None) 
             # Create a variable, get value from url, set default value to view and pass it to template
             mode = request.args.get('mode', 'view')
-            return render_template('profile.html', account = account, mode = mode, currentdate = datetime.now().date(), default_image = DEFAULT_IMAGE)
+            return render_template('profile.html', account = account, mode = mode, currentdate = datetime.now().date(), default_image = DEFAULT_IMAGE, msg=msg)
+
         except Exception as e:
             return f'An error occurred: {str(e)}'
             
@@ -340,8 +452,8 @@ def logout():
     # Redirect to login page
     return redirect(url_for('login'))
 
-@app.route('/change_password', methods=['GET', 'POST'])
-def change_password():
+@app.route('/<username>/change_password', methods=['GET', 'POST'])
+def change_password(username):
     if 'loggedin' in session:
         if request.method == 'GET':
             return render_template('change_password.html')
@@ -370,7 +482,7 @@ def change_password():
                 cursor.execute('UPDATE users SET password_hash = %s WHERE user_id = %s', 
                                 (password_hash, session['id']))
                 db_connection.commit()
-                return redirect(url_for('profile'))
+                return render_template('change_password.html', username=session['username'], msg = 'Password updated successfully!')
             
             if error:
                 return render_template('change_password.html', error = error)
@@ -380,6 +492,10 @@ def change_password():
                  
     else:
         return redirect(url_for('login'))
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('error.html', error='Page not found'), 404
 
 if __name__ == '__main__':
     app.run(debug=True)

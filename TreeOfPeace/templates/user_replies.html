@@ -1,0 +1,20 @@
+{% extends 'base.html' %} {% block title %}User replies{%endblock%} {% block
+content %}
+
+<h1>User Replies</h1>
+{% for reply in replies %}
+<form
+  action="{{ url_for('user_replies', username = session['username']) }}"
+  method="POST">
+  <div class="contanier">
+    <a href="{{ url_for('message_detail', message_id = reply.message_id) }}">
+      {{ reply.content }}
+    </a>
+    <span>{{ reply.created_at | format_date }}</span>
+    <input type="hidden" name="reply_id" value="{{ reply.reply_id }}" />
+    <input type="hidden" name="message_id" value="{{ reply.message_id }}" />
+    <button type="submit" onclick="return confirmDelete();">Delete</button>
+  </div>
+</form>
+<script src="{{ url_for('static', filename='js/confirmDelete.js') }}"></script>
+{% endfor %} {% endblock%}
