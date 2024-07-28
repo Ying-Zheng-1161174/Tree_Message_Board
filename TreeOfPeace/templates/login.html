@@ -1,4 +1,23 @@
 {% extends 'base.html' %} {% block title %}Login{%endblock%} {% block content %}
+{% if success %}
+<div class="alert alert-success alert-dismissible fade show" role="alert">
+  {{ success }}
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"></button>
+</div>
+{% endif %} {% if error %}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  {{ error }}
+  <button
+    type="button"
+    class="btn-close"
+    data-bs-dismiss="alert"
+    aria-label="Close"></button>
+</div>
+{% endif %}
 
 <h1>Login</h1>
 <form
@@ -26,11 +45,6 @@
       class="form-control"
       required />
     <div class="invalid-feedback">Please enter your password</div>
-  </div>
-  {% if error %}
-  <div>{{ error }}</div>
-  {% endif %}
-  <div>
     <p>
       Don't have an account?
       <a href="{{ url_for('register') }}">Sign up</a>

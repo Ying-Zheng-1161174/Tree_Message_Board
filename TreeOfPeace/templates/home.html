@@ -1,4 +1,24 @@
-{% extends 'base.html' %} {% block title %}Tree of Peace{%endblock%} {% block
+{% extends 'base.html' %} {% block title %}Peace Of Tree{%endblock%} {% block
 content %}
-<h1>This is home page</h1>
-{% endblock%}
+
+<h1>Peace of Tree</h1>
+
+{% for message in messages %}
+<div>
+  <div class="contanier">
+    <a href="{{ url_for('message_detail', message_id = message.message_id) }}">
+      {{ message.title }}
+    </a>
+    {% if message.image %}
+    <div>
+      <img
+        src="{{ url_for('static', filename=message.image) }}"
+        alt="profile_image"
+        width="20" />
+      {% endif %}
+      <span>{{ message.username }}</span>
+      <span>{{ message.message_created_at | format_date }}</span>
+    </div>
+  </div>
+</div>
+{% endfor %} {% endblock%}

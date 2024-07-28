@@ -1,61 +1,62 @@
 -- -----------------------------------------------------
--- Table treeofpeace.users
+-- Table `users`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS treeofpeace.users (
-  user_id INT NOT NULL AUTO_INCREMENT,
-  username VARCHAR(20) NOT NULL UNIQUE,
-  password_hash CHAR(64) NOT NULL COMMENT 'SHA256 password hash stored in hexadecimal (64 characters)',
-  email VARCHAR(320) NOT NULL COMMENT 'Maximum email address length according to RFC5321 section 4.5.3.1 is 320 characters (64 for local-part, 1 for at sign, 255 for domain)',
-  first_name VARCHAR(50) NOT NULL,
-  last_name VARCHAR(50) NOT NULL,
-  birth_date DATE NOT NULL, 
-  location VARCHAR(50) NOT NULL, 
-  profile_image VARCHAR(255),
-  role ENUM('member','moderator','admin') NOT NULL,
-  status ENUM('active','inactive') NOT NULL,
-  PRIMARY KEY (user_id)
+CREATE TABLE IF NOT EXISTS `users` (
+  `user_id` INT NOT NULL AUTO_INCREMENT,
+  `username` VARCHAR(20) NOT NULL UNIQUE,
+  `password_hash` CHAR(64) NOT NULL,
+  `email` VARCHAR(320) NOT NULL,
+  `first_name` VARCHAR(50) NOT NULL,
+  `last_name` VARCHAR(50) NOT NULL,
+  `birth_date` DATE NOT NULL, 
+  `location` VARCHAR(50) NOT NULL, 
+  `profile_image` VARCHAR(255),
+  `role` ENUM('member','moderator','admin') NOT NULL,
+  `status` ENUM('active','inactive') NOT NULL,
+  PRIMARY KEY (`user_id`)
 );
 
 -- -----------------------------------------------------
--- Table treeofpeace.messages
+-- Table `messages`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS treeofpeace.messages (
-  message_id INT NOT NULL AUTO_INCREMENT,
-  user_id INT NOT NULL,
-  title VARCHAR(255) NOT NULL,
-  content TEXT NOT NULL,
-  created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
-  PRIMARY KEY (message_id),
-  CONSTRAINT fk_user_id
-    FOREIGN KEY (user_id)
-    REFERENCES treeofpeace.users (user_id)
+CREATE TABLE IF NOT EXISTS `messages` (
+  `message_id` INT NOT NULL AUTO_INCREMENT,
+  `user_id` INT NOT NULL,
+  `title` VARCHAR(255) NOT NULL,
+  `content` TEXT NOT NULL,
+  `created_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP, 
+  PRIMARY KEY (`message_id`),
+  CONSTRAINT `fk_user_id`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `users` (`user_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
 
 -- -----------------------------------------------------
--- Table treeofpeace.replies
+-- Table `replies`
 -- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS treeofpeace.replies (
-  reply_id INT NOT NULL AUTO_INCREMENT,
-  message_id INT NOT NULL,
-  user_id INT NOT NULL,
-  content TEXT NOT NULL,
-  created_at TIMESTAMP NOT NULL, 
-  PRIMARY KEY (reply_id),
-  CONSTRAINT fk_message_id
-    FOREIGN KEY (message_id)
-    REFERENCES treeofpeace.messages (message_id)
+CREATE TABLE IF NOT EXISTS `replies` (
+  `reply_id` INT NOT NULL AUTO_INCREMENT,
+  `message_id` INT NOT NULL,
+  `user_id` INT NOT NULL,
+  `content` TEXT NOT NULL,
+  `created_at` TIMESTAMP NOT NULL, 
+  PRIMARY KEY (`reply_id`),
+  CONSTRAINT `fk_message_id`
+    FOREIGN KEY (`message_id`)
+    REFERENCES `messages` (`message_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE,
-  CONSTRAINT fk_reply_user_id
-    FOREIGN KEY (user_id)
-    REFERENCES treeofpeace.users (user_id)
+  CONSTRAINT `fk_reply_user_id`
+    FOREIGN KEY (`user_id`)
+    REFERENCES `users` (`user_id`)
     ON DELETE CASCADE
     ON UPDATE CASCADE
 );
 
-INSERT INTO treeofpeace.users (username, password_hash, email, first_name, last_name, birth_date, location, profile_image, role, status) VALUES
+-- Insert data into `users`
+INSERT INTO `users` (`username`, `password_hash`, `email`, `first_name`, `last_name`, `birth_date`, `location`, `profile_image`, `role`, `status`) VALUES
     ('member1', '2a5cef2032b01a4bc29c06fa6093d75bccf315f9eb9cd874ac9b6e312f60065c', 'member1@example.com', 'John', 'Doe', '1990-01-01', 'Auckland', 'upload/tree.png', 'member', 'active'),
     ('member2', '615e18b1c7e571e94356923ff92c16f69785d777c04bd1b80387ba4249edf829', 'member2@example.com', 'Jane', 'Doe', '1991-02-02', 'Wellington', 'upload/tree.png', 'member', 'active'),
     ('member3', '663f1974fdc1ea92e965623443b0df854952c4ff1b18aa3451eca86e2954a53a', 'member3@example.com', 'Jim', 'Beam', '1992-03-03', 'Christchurch', 'upload/tree.png', 'member', 'active'),
@@ -84,8 +85,8 @@ INSERT INTO treeofpeace.users (username, password_hash, email, first_name, last_
     ('admin1', '1b8b163184811b6ed8b8c94a6bf9c06757f07b1d404b28415967621fd7738a3a', 'admin1@example.com', 'Paul', 'Hernandez', '1970-02-26', 'Auckland', 'upload/tree.png', 'admin', 'active'),
     ('admin2', '29e3e0bda874b64f480d82b71ac24965e0af8240a878042df738ae151a100c22', 'admin2@example.com', 'Pamela', 'Garcia', '1971-03-27', 'Wellington', 'upload/tree.png', 'admin', 'active');
 
-
-INSERT INTO treeofpeace.messages (user_id, title, content, created_at) VALUES
+-- Insert data into `messages`
+INSERT INTO `messages` (`user_id`, `title`, `content`, `created_at`) VALUES
     (1, 'Tree roots damaging my fence', 'I have a large oak tree whose roots are damaging my fence. Any advice?', CURRENT_TIMESTAMP),
     (2, 'Neighbors tree blocking sunlight', 'My neighbor has a huge tree that blocks most of the sunlight in my garden. How can I approach this issue?', CURRENT_TIMESTAMP),
     (3, 'Best trees for privacy hedges?', 'I am looking to plant some trees that provide good privacy. Any suggestions?', CURRENT_TIMESTAMP),
@@ -118,7 +119,8 @@ INSERT INTO treeofpeace.messages (user_id, title, content, created_at) VALUES
     (12, 'Tree causing too much noise', 'A tree in my yard is causing a lot of noise during windstorms. How can I fix this?', CURRENT_TIMESTAMP);
 
 
-INSERT INTO treeofpeace.replies (message_id, user_id, content, created_at) VALUES
+-- Insert data into `replies`
+INSERT INTO `replies` (`message_id`, `user_id`, `content`, `created_at`) VALUES
     (1, 2, 'You could try installing a root barrier to prevent further damage.', CURRENT_TIMESTAMP),
     (2, 3, 'Have you spoken to your neighbor about it? Maybe they can trim it.', CURRENT_TIMESTAMP),
     (3, 4, 'Leylandii and Thuja Green Giant are great for privacy hedges.', CURRENT_TIMESTAMP),
@@ -139,3 +141,4 @@ INSERT INTO treeofpeace.replies (message_id, user_id, content, created_at) VALUE
     (18, 19, 'You can install bird deterrents like reflective tape.', CURRENT_TIMESTAMP),
     (19, 20, 'Contact your local utility company for advice.', CURRENT_TIMESTAMP),
     (20, 21, 'Late winter or early spring is usually best.', CURRENT_TIMESTAMP);
+

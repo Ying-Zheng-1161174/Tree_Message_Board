@@ -1,9 +1,7 @@
 USE treeofpeace;
 
--- -----------------------------------------------------
--- Initial users
--- -----------------------------------------------------
-INSERT INTO treeofpeace.users (username, password_hash, email, first_name, last_name, birth_date, location, profile_image, role, status) VALUES
+-- Insert data into `users`
+INSERT INTO `users` (`username`, `password_hash`, `email`, `first_name`, `last_name`, `birth_date`, `location`, `profile_image`, `role`, `status`) VALUES
     ('member1', '2a5cef2032b01a4bc29c06fa6093d75bccf315f9eb9cd874ac9b6e312f60065c', 'member1@example.com', 'John', 'Doe', '1990-01-01', 'Auckland', 'upload/tree.png', 'member', 'active'),
     ('member2', '615e18b1c7e571e94356923ff92c16f69785d777c04bd1b80387ba4249edf829', 'member2@example.com', 'Jane', 'Doe', '1991-02-02', 'Wellington', 'upload/tree.png', 'member', 'active'),
     ('member3', '663f1974fdc1ea92e965623443b0df854952c4ff1b18aa3451eca86e2954a53a', 'member3@example.com', 'Jim', 'Beam', '1992-03-03', 'Christchurch', 'upload/tree.png', 'member', 'active'),
@@ -32,10 +30,8 @@ INSERT INTO treeofpeace.users (username, password_hash, email, first_name, last_
     ('admin1', '1b8b163184811b6ed8b8c94a6bf9c06757f07b1d404b28415967621fd7738a3a', 'admin1@example.com', 'Paul', 'Hernandez', '1970-02-26', 'Auckland', 'upload/tree.png', 'admin', 'active'),
     ('admin2', '29e3e0bda874b64f480d82b71ac24965e0af8240a878042df738ae151a100c22', 'admin2@example.com', 'Pamela', 'Garcia', '1971-03-27', 'Wellington', 'upload/tree.png', 'admin', 'active');
 
--- -----------------------------------------------------
--- Initial posts(messages)
--- -----------------------------------------------------
-INSERT INTO treeofpeace.messages (user_id, title, content, created_at) VALUES
+-- Insert data into `messages`
+INSERT INTO `messages` (`user_id`, `title`, `content`, `created_at`) VALUES
     (1, 'Tree roots damaging my fence', 'I have a large oak tree whose roots are damaging my fence. Any advice?', CURRENT_TIMESTAMP),
     (2, 'Neighbors tree blocking sunlight', 'My neighbor has a huge tree that blocks most of the sunlight in my garden. How can I approach this issue?', CURRENT_TIMESTAMP),
     (3, 'Best trees for privacy hedges?', 'I am looking to plant some trees that provide good privacy. Any suggestions?', CURRENT_TIMESTAMP),
@@ -67,10 +63,9 @@ INSERT INTO treeofpeace.messages (user_id, title, content, created_at) VALUES
     (11, 'Best way to remove a tree stump', 'What is the best way to remove a tree stump?', CURRENT_TIMESTAMP),
     (12, 'Tree causing too much noise', 'A tree in my yard is causing a lot of noise during windstorms. How can I fix this?', CURRENT_TIMESTAMP);
 
--- -----------------------------------------------------
--- Initial replies
--- -----------------------------------------------------
-INSERT INTO treeofpeace.replies (message_id, user_id, content, created_at) VALUES
+
+-- Insert data into `replies`
+INSERT INTO `replies` (`message_id`, `user_id`, `content`, `created_at`) VALUES
     (1, 2, 'You could try installing a root barrier to prevent further damage.', CURRENT_TIMESTAMP),
     (2, 3, 'Have you spoken to your neighbor about it? Maybe they can trim it.', CURRENT_TIMESTAMP),
     (3, 4, 'Leylandii and Thuja Green Giant are great for privacy hedges.', CURRENT_TIMESTAMP),
@@ -91,3 +86,4 @@ INSERT INTO treeofpeace.replies (message_id, user_id, content, created_at) VALUE
     (18, 19, 'You can install bird deterrents like reflective tape.', CURRENT_TIMESTAMP),
     (19, 20, 'Contact your local utility company for advice.', CURRENT_TIMESTAMP),
     (20, 21, 'Late winter or early spring is usually best.', CURRENT_TIMESTAMP);
+

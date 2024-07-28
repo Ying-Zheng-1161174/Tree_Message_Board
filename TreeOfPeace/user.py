@@ -12,7 +12,6 @@ import mysql.connector
 import re
 import os
 from TreeOfPeace.filters import format_date 
-from flask import flash
 
 # Create an instance of hashing
 hashing = Hashing(app)
@@ -69,8 +68,7 @@ def home():
                    ORDER BY m.created_at DESC
                    ''')
     messages = cursor.fetchall()
-
-    return render_template('message_title.html', messages = messages )
+    return render_template('home.html', messages = messages )
 
 @app.route('/message/<int:message_id>')
 def message_detail(message_id):
@@ -127,8 +125,8 @@ def message_detail(message_id):
                 })
 
         return render_template('message_details.html',  message = message)
-    except Exception as e:
-        return f'An error occurred: {str(e)}'
+    except Exception:
+        return render_template('error.html', error = 'Something went wrong. Please try again later.')
 
 @app.route('/add_reply/<int:message_id>', methods=['POST'])
 def add_reply(message_id):
@@ -148,8 +146,8 @@ def add_reply(message_id):
                                ''', (message_id, user_id, reply_content))
                 db_connection.commit()
                 return redirect(url_for('message_detail', message_id=message_id))
-            except Exception as e:
-                return f'An error occurred: {str(e)}'
+            except Exception:
+                return render_template('error.html', error = 'Something went wrong. Please try again later.')
 
     else:       
         return redirect(url_for('login'))
@@ -182,8 +180,8 @@ def add_message(username = None):
 
                     # Redirect to message detail page
                     return redirect(url_for('message_detail', message_id=message_id))
-                except Exception as e:
-                    return f'An error occurred: {str(e)}'
+                except Exception:
+                    return render_template('error.html', error = 'Something went wrong. Please try again later.')
     else:
         return redirect(url_for('login'))
 
@@ -196,8 +194,8 @@ def user_messages(username):
                 cursor.execute('SELECT message_id, title, created_at FROM messages WHERE user_id = %s', (session['id'],))
                 messages = cursor.fetchall()
                 return render_template('user_messages.html', messages = messages)
-            except Exception as e:
-                return f'An error occurred: {str(e)}' 
+            except Exception:
+                return render_template('error.html', error = 'Something went wrong. Please try again later.') 
         else:
             messageID = request.form['message_id']
             if username == session['username'] or session['role'] in ['moderator','admin']:
@@ -209,8 +207,8 @@ def user_messages(username):
                         return redirect(url_for('home'))
                     else:
                         return redirect(url_for('user_messages', username = session['username']))
-                except Exception as e:
-                    return f'An error occurred: {str(e)}' 
+                except Exception:
+                    return render_template('error.html', error = 'Something went wrong. Please try again later.') 
     else:
         return redirect(url_for('login'))
 
@@ -223,8 +221,8 @@ def user_replies(username):
                 cursor.execute('SELECT reply_id, message_id, content, created_at FROM replies WHERE user_id = %s', (session['id'],))
                 replies = cursor.fetchall()
                 return render_template('user_replies.html', replies = replies)
-            except Exception as e:
-                return f'An error occurred: {str(e)}' 
+            except Exception:
+                return render_template('error.html', error = 'Something went wrong. Please try again later.') 
         else:
             replyID = request.form['reply_id']
             messageID = request.form['message_id']
@@ -237,8 +235,8 @@ def user_replies(username):
                         return redirect(url_for('message_detail', message_id= messageID))
                     else:
                         return redirect(url_for('user_replies', username = session['username']))
-                except Exception as e:
-                    return f'An error occurred: {str(e)}' 
+                except Exception:
+                    return render_template('error.html', error = 'Something went wrong. Please try again later.') 
     else:
         return redirect(url_for('login'))
     
@@ -285,8 +283,8 @@ def admin(username=None):
                 db_connection.commit()
                 session['message'] = 'Change saved!'
                 return redirect(url_for('profile', username = username))
-            except Exception as e:
-                return f'An error occurred: {str(e)}'
+            except Exception:
+                return render_template('error.html', error = 'Something went wrong. Please try again later.')
     else:
         return render_template('error.html', error = 'Access Denied')
 
@@ -338,24 +336,13 @@ def register():
                                 (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', 
                                 (userName, password_hash, email, firstName, lastName, birthDate, location, DEFAULT_IMAGE, DEFAULT_ROLE, DEFAULT_STATUS ))
                 db_connection.commit()
-                
-                cursor.execute('SELECT user_id, username, role FROM users WHERE username = %s', (userName,))
-                account = cursor.fetchone()
-
-                if account:
-                    session['loggedin'] = True
-                    session['id'] = account['user_id']
-                    session['username'] = account['username']
-                    session['role'] = account['role']
-                    return render_template('success_redirect.html', success='Registration successful!')
-                else:
-                    error = 'Failed to create account, please try again'
+                return render_template('login.html', success='Registration successful! please login.')
 
             if error:
                 return render_template('register.html', error = error)
                     
-        except Exception as e:
-            return f'An error occurred: {str(e)}'       
+        except Exception:
+            return render_template('error.html', error = 'Something went wrong. Please try again later.')       
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -385,8 +372,8 @@ def login():
             else:
                 return render_template('login.html', error = 'Incorrect username or password') 
 
-        except Exception as e:
-            return f'An error occurred: {str(e)}'
+        except Exception:
+            return render_template('error.html', error = 'Something went wrong. Please try again later.')
 
 @app.route('/<username>/profile', methods=['GET', 'POST'])
 def profile(username):
@@ -425,8 +412,8 @@ def profile(username):
                 session['message'] = 'Profile updated successfully!'
       
                 return redirect(url_for('profile', username=session['username']))
-            except Exception as e:
-                return f'An error occurred: {str(e)}'
+            except Exception:
+                return render_template('error.html', error = 'Something went wrong. Please try again later.')
         
         # If it is a Get request, display user information 
         try:
@@ -437,8 +424,8 @@ def profile(username):
             mode = request.args.get('mode', 'view')
             return render_template('profile.html', account = account, mode = mode, currentdate = datetime.now().date(), default_image = DEFAULT_IMAGE, msg=msg)
 
-        except Exception as e:
-            return f'An error occurred: {str(e)}'
+        except Exception:
+            return render_template('error.html', error = 'Something went wrong. Please try again later.')
             
     return redirect(url_for('login'))
 
@@ -487,8 +474,8 @@ def change_password(username):
             if error:
                 return render_template('change_password.html', error = error)
             
-        except Exception as e:
-            return f'An error occurred: {str(e)}'
+        except Exception:
+            return render_template('error.html', error = 'Something went wrong. Please try again later.')
                  
     else:
         return redirect(url_for('login'))

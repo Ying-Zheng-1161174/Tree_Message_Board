@@ -79,7 +79,12 @@
             <li class="nav-item">
               <a href="{{ url_for('admin') }}">Users</a>
             </li>
-            {% endif %} {% endif %}
+            {% endif %}
+            <li class="nav-item">
+              <span>{{ session['username'] }} {{ session['role']}}</span>
+            </li>
+            {% endif %}
+
             <li class="nav-item">
               <a
                 class="nav-link"
