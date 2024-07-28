@@ -2,6 +2,7 @@
 content %}
 
 <h1>User Messages</h1>
+<!-- List a user's messages -->
 {% for message in messages %}
 <form
   action="{{ url_for('user_messages', username = session['username']) }}"

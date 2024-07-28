@@ -2,6 +2,7 @@
 content %}
 
 <h1>User Replies</h1>
+<!-- List a user's replies -->
 {% for reply in replies %}
 <form
   action="{{ url_for('user_replies', username = session['username']) }}"

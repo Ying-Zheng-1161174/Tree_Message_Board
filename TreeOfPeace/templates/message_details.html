@@ -1,6 +1,7 @@
 {% extends 'base.html' %} {% block title %}Messages{%endblock%} {% block content
 %}
 <header>Message details</header>
+<!-- Display message details -->
 {% if message %}
 <h1>{{ message.title }}</h1>
 <div>
@@ -14,8 +15,9 @@
     <span>Posted by: {{ message.username }}</span>
     <span>{{ message.message_created_at | format_date }}</span>
     <p>{{ message.message_content }}</p>
-    {% if message.username == session['username'] or session['role'] in
-    ['moderator','admin'] %}
+    <!-- Only loggedin user is session user, or moderator or admin can delete a message -->
+    {% if session['loggedin'] and (message.username == session['username'] or
+    session['role'] in ['moderator','admin']) %}
     <form
       action="{{ url_for('user_messages', username = session['username']) }}"
       method="POST">
@@ -41,8 +43,9 @@
           <span>{{ reply.reply_username }}</span>
           <span>{{ reply.reply_created_at }}</span>
         </li>
-        {% if reply.reply_username == session['username'] or session['role'] in
-        ['moderator','admin'] %}
+        <!-- Only loggedin user is session user, or moderator or admin can delete a reply -->
+        {% if session['loggedin'] and (reply.reply_username ==
+        session['username'] or session['role'] in ['moderator','admin']) %}
         <form
           action="{{ url_for('user_replies', username = session['username']) }}"
           method="POST">

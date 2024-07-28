@@ -1,6 +1,12 @@
 {% extends 'base.html' %} {% block title %}Profile{%endblock%} {% block content
 %} {% if mode == 'edit' %}
 <h1>Edit profile</h1>
+{% if error %}
+<div class="alert alert-danger alert-dismissible fade show" role="alert">
+  {{ error }}
+  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+</div>
+{% endif %}
 <!-- edit profile -->
 <form
   action="{{ url_for('profile', username=account['username']) }}"
@@ -136,8 +142,8 @@
   {% endif %}
   <table>
     <tr>
-      <td>Username:</td>
-      <td>{{ account['username']}}</td>
+      <td>Email:</td>
+      <td>{{ account['email']}}</td>
     </tr>
     <tr>
       <td>First Name:</td>
@@ -156,6 +162,7 @@
       <td>{{ account['location']}}</td>
     </tr>
   </table>
+  <!-- Only loggedin user is session user can edit their profile -->
   {% if session['username'] == account['username'] %}
   <div>
   <button>
@@ -168,6 +175,7 @@
   {% endif %}
 </div>
 <div>
+  <!-- Only admin can see and edit the role and status of a user -->
   {% if session['role'] == 'admin' %}
     <form action="{{ url_for('admin', username = account['username']) }}" method="POST">
       <table>
