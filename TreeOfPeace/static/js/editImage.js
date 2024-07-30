@@ -30,6 +30,7 @@ function loadFile(event) {
     image.id = "profile_image";
     image.width = 100;
     image.height = 100;
+    image.className = "img-thumbnail mb-2";
     if (imageWrapper) {
       imageWrapper.insertBefore(image, imageWrapper.firstChild);
     }
@@ -39,8 +40,8 @@ function loadFile(event) {
       const buttonsDiv = document.createElement("div");
       buttonsDiv.id = "image_buttons";
       buttonsDiv.innerHTML = `
-          <button type="button" onclick="document.getElementById('profile_image_input').click();">Change picture</button>
-          <button type="button" id="remove_image_button">Delete</button>`;
+          <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('profile_image_input').click();">Change picture</button>
+          <button type="button" id="remove_image_button" class="btn btn-sm btn-danger bg-opacity-50">Delete</button>`;
       imageWrapper.appendChild(buttonsDiv);
 
       // Attach event listener to new created button
@@ -90,6 +91,7 @@ function removeImage() {
     addImageButton = document.createElement("button");
     addImageButton.type = "button";
     addImageButton.id = "add_image_button";
+    addImageButton.className = "btn btn-sm btn-secondary";
     addImageButton.textContent = "Add image";
     addImageButton.onclick = function () {
       document.getElementById("profile_image_input").click();

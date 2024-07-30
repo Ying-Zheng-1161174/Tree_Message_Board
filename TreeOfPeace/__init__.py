@@ -12,7 +12,9 @@ hashing = Hashing(app)
 
 # Import views 
 from TreeOfPeace.views import main, user, admin, auth
-from TreeOfPeace.utils.filters import format_date
+from TreeOfPeace.utils.filters import format_date, truncate_content
 
 # Register data formatting filter
 app.jinja_env.filters['format_date'] = format_date
+# Register content truncate filter
+app.jinja_env.filters['truncate_content'] = truncate_content

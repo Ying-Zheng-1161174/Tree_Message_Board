@@ -1,86 +1,128 @@
-{% extends 'base.html' %} {% block title %}Messages{%endblock%} {% block content
-%}
-<header>Message details</header>
-<!-- Display message details -->
-{% if message %}
-<h1>{{ message.title }}</h1>
-<div>
-  <div>
-    {% if message.image %}
-    <img
-      src="{{ url_for('static', filename=message.image) }}"
-      alt="profile_image"
-      width="20" />
-    {% endif %}
-    <span>Posted by: {{ message.username }}</span>
-    <span>{{ message.message_created_at | format_date }}</span>
-    <p>{{ message.message_content }}</p>
+{% extends 'base.html' %} {% block title %}Messages{% endblock %} {% block
+content %}
+<div class="container mt-4">
+  <!-- Display message details -->
+  {% if message %}
+  <div class="card mb-4">
+    <div class="card-body">
+      <h2 class="card-title border-bottom pb-2 mb-3">{{ message.title }}</h2>
+      <p class="card-text">{{ message.message_content }}</p>
+      <div class="d-flex justify-content-end align-items-center mt-3">
+        {% if message.image %}
+        <img
+          src="{{ url_for('static', filename=message.image) }}"
+          alt="profile_image"
+          width="30"
+          height="30"
+          class="rounded-circle me-2" />
+        {% endif %}
+        <span class="me-2">{{ message.username }}</span>
+        <small class="text-muted">
+          {{ message.message_created_at | format_date }}
+        </small>
+      </div>
+    </div>
     <!-- Only loggedin user is session user, or moderator or admin can delete a message -->
     {% if session['loggedin'] and (message.username == session['username'] or
     session['role'] in ['moderator','admin']) %}
-    <form
-      action="{{ url_for('user_messages', username = session['username']) }}"
-      method="POST">
-      <input type="hidden" name="message_id" value="{{ message.message_id }}" />
-      <button type="submit" onclick="return confirmDelete();">Delete</button>
-    </form>
+    <div class="card-footer d-flex justify-content-end align-items-center">
+      <form
+        action="{{ url_for('user_messages', username = session['username']) }}"
+        method="POST"
+        class="d-inline">
+        <input
+          type="hidden"
+          name="message_id"
+          value="{{ message.message_id }}" />
+        <button
+          type="submit"
+          class="btn btn-outline-danger btn-sm"
+          onclick="return confirmDelete();">
+          Delete
+        </button>
+      </form>
+    </div>
     {% endif %}
   </div>
-  <h2>Replies</h2>
+
   {% if message.replies %}
-  <div>
-    <ul>
-      {% for reply in message.replies %}
-      <div>
-        <li>
-          <p>{{ reply.reply_content }}</p>
+  <h4 class="mb-3">Replies</h4>
+  <div class="list-group mb-4">
+    {% for reply in message.replies %}
+    <div class="list-group-item">
+      <p class="mt-2">{{ reply.reply_content }}</p>
+      <div class="d-flex justify-content-between align-items-center mt-2">
+        <div>
           {% if reply.reply_image %}
           <img
             src="{{ url_for('static', filename=reply.reply_image) }}"
             alt="profile_image"
-            width="20" />
+            width="25"
+            height="25"
+            class="rounded-circle me-2" />
           {% endif %}
-          <span>{{ reply.reply_username }}</span>
-          <span>{{ reply.reply_created_at }}</span>
-        </li>
-        <!-- Only loggedin user is session user, or moderator or admin can delete a reply -->
-        {% if session['loggedin'] and (reply.reply_username ==
-        session['username'] or session['role'] in ['moderator','admin']) %}
-        <form
-          action="{{ url_for('user_replies', username = session['username']) }}"
-          method="POST">
-          <input type="hidden" name="reply_id" value="{{ reply.reply_id }}" />
-          <input
-            type="hidden"
-            name="message_id"
-            value="{{ message.message_id }}" />
-          <button type="submit" onclick="return confirmDelete();">
-            Delete
-          </button>
-        </form>
-        {% endif %}
+          <span class="me-1">{{ reply.reply_username }}</span>
+          <small class="text-muted">{{ reply.reply_created_at }}</small>
+        </div>
+        <div class="mb-2">
+          <!-- Only loggedin user is session user, or moderator or admin can delete a reply -->
+          {% if session['loggedin'] and (reply.reply_username ==
+          session['username'] or session['role'] in ['moderator','admin']) %}
+          <form
+            action="{{ url_for('user_replies', username = session['username']) }}"
+            method="POST"
+            class="mt-2">
+            <input type="hidden" name="reply_id" value="{{ reply.reply_id }}" />
+            <input
+              type="hidden"
+              name="message_id"
+              value="{{ message.message_id }}" />
+            <button
+              type="submit"
+              class="btn btn-outline-danger btn-sm"
+              onclick="return confirmDelete();">
+              Delete
+            </button>
+          </form>
+          {% endif %}
+        </div>
       </div>
-      {% endfor %}
-    </ul>
-    {% else %}
-    <p>No replies yet</p>
-    {% endif %} {% else %}
-    <p>Message not found</p>
-    {% endif %}
+    </div>
+    {% endfor %}
   </div>
-  <form
-    action="{{ url_for('add_reply', message_id=message.message_id) }}"
-    method="POST"
-    class="needs-validation"
-    novalidate>
-    <textarea name="reply_content" required></textarea>
-    <div class="invalid-feedback">Reply cannot be empty</div>
-    {% if error %}
-    <div class="error">{{ error }}</div>
-    {% endif %}
-    <br />
-    <button type="submit">Reply</button>
-  </form>
+  {% else %}
+  <p>No replies yet</p>
+  {% endif %}
+
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Add a reply</h4>
+      <form
+        action="{{ url_for('add_reply', message_id=message.message_id) }}"
+        method="POST"
+        class="needs-validation"
+        novalidate>
+        <div class="mb-3">
+          <textarea
+            name="reply_content"
+            class="form-control"
+            rows="3"
+            required></textarea>
+          <div class="invalid-feedback">Reply cannot be empty</div>
+        </div>
+        {% if error %}
+        <div class="alert alert-danger">{{ error }}</div>
+        {% endif %}
+        <button type="submit" class="btn btn-success bg-opacity-75">
+          Reply
+        </button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <p class="alert alert-warning">Message not found</p>
+  {% endif %}
 </div>
+
 <script src="{{ url_for('static', filename='js/confirmDelete.js') }}"></script>
-{% endblock%}
+{% endblock %}

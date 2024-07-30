@@ -14,7 +14,7 @@ def home():
     # Get the messages, replies, users info from database
     cursor.execute('''
                    SELECT u.username, u.profile_image AS image, 
-                   m.message_id, m.title, m.created_at AS message_created_at
+                   m.message_id, m.title, m.content, m.created_at AS message_created_at
                    FROM users u
                    INNER JOIN messages m ON u.user_id = m.user_id 
                    ORDER BY m.created_at DESC

@@ -24,7 +24,7 @@ def user_messages(username):
     if request.method == 'GET':
         try:
             # View the loggedin user's messages
-            cursor.execute('SELECT message_id, title, created_at FROM messages WHERE user_id = %s', (session['id'],))
+            cursor.execute('SELECT * FROM messages WHERE user_id = %s', (session['id'],))
             messages = cursor.fetchall()
             return render_template('user_messages.html', messages = messages)
         except Exception:
@@ -54,8 +54,15 @@ def user_replies(username):
     cursor = getCursor()
     if request.method == 'GET':
         try:
-            cursor.execute('SELECT reply_id, message_id, content, created_at FROM replies WHERE user_id = %s', (session['id'],))
+            cursor.execute('''
+                           SELECT r.reply_id, r.message_id, r.content, r.created_at,
+                           m.title AS message_title FROM replies r
+                           INNER JOIN
+                           messages m ON r.message_id = m.message_id
+                           WHERE r.user_id = %s
+                           ''', (session['id'],))
             replies = cursor.fetchall()
+            
             return render_template('user_replies.html', replies = replies)
         except Exception:
             return render_template('error.html', error = 'Something went wrong. Please try again later.') 

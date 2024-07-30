@@ -1,21 +1,52 @@
-{% extends 'base.html' %} {% block title %}User replies{%endblock%} {% block
+{% extends 'base.html' %} {% block title %}User Replies{% endblock %} {% block
 content %}
 
-<h1>User Replies</h1>
-<!-- List a user's replies -->
-{% for reply in replies %}
-<form
-  action="{{ url_for('user_replies', username = session['username']) }}"
-  method="POST">
-  <div class="contanier">
-    <a href="{{ url_for('message_detail', message_id = reply.message_id) }}">
-      {{ reply.content }}
+<div class="container mt-4">
+  <h2 class="mb-4">User Replies</h2>
+
+  {% if replies %}
+  <div class="list-group">
+    {% for reply in replies %}
+    <a
+      href="{{ url_for('message_detail', message_id=reply.message_id) }}"
+      class="list-group-item list-group-item-action text-decoration-none">
+      <div class="row">
+        <div class="col-12 col-sm-8">
+          <h5 class="mb-2 text-success text-truncate">
+            {{ reply.content | truncate_content(50) }}
+          </h5>
+        </div>
+        <div class="col-12 col-sm-4 text-sm-end">
+          <small class="text-muted mt-2 mb-2">
+            {{ reply.created_at | format_date }}
+          </small>
+        </div>
+      </div>
+      <div class="d-flex justify-content-between">
+        <span class="text-truncate">
+          Reply to Message # {{ reply.message_title }}
+        </span>
+        <form
+          action="{{ url_for('user_replies', username=session['username']) }}"
+          method="POST"
+          class="ml-auto">
+          <input type="hidden" name="reply_id" value="{{ reply.reply_id }}" />
+          <button
+            type="submit"
+            class="btn btn-outline-danger btn-sm"
+            onclick="return confirmDelete();">
+            Delete
+          </button>
+        </form>
+      </div>
     </a>
-    <span>{{ reply.created_at | format_date }}</span>
-    <input type="hidden" name="reply_id" value="{{ reply.reply_id }}" />
-    <input type="hidden" name="message_id" value="{{ reply.message_id }}" />
-    <button type="submit" onclick="return confirmDelete();">Delete</button>
+    {% endfor %}
   </div>
-</form>
+  {% else %}
+  <p class="alert alert-info">You have not replied to any messages yet.</p>
+  {% endif %}
+</div>
+
 <script src="{{ url_for('static', filename='js/confirmDelete.js') }}"></script>
-{% endfor %} {% endblock%}
+
+{% endblock %}

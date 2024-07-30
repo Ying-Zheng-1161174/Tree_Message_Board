@@ -1,46 +1,61 @@
 {% extends 'base.html' %} {% block title %}Create Message{%endblock%} {% block
 content %}
 
-<h1>Add Messages</h1>
-{% if error %}
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-  {{ error }}
-  <button
-    type="button"
-    class="btn-close"
-    data-bs-dismiss="alert"
-    aria-label="Close"></button>
-</div>
-{% endif %}
-<!-- Add a new message form -->
-<form
-  action="{{ url_for('add_message', username=session['username']) }}"
-  method="post"
-  class="needs-validation"
-  novalidate>
-  <div class="mb-3">
-    <label for="title" class="form-label">Title</label>
-    <input
-      type="text"
-      name="title"
-      id="title"
-      placeholder="title"
-      class="form-control"
-      required />
-    <div class="invalid-feedback">Please enter a title</div>
-  </div>
-  <div class="mb-3">
-    <label for="content" class="form-label">Message</label>
-    <textarea
-      type="content"
-      name="content"
-      id="content"
-      class="form-control"
-      required></textarea>
-    <div class="invalid-feedback">Please enter your message</div>
-    <div>
-      <button type="submit" class="btn btn-primary">Post your message</button>
+<div class="container mt-4">
+  <div class="row">
+    <div class="col-md-8 col-lg-6">
+      <h2 class="mb-4">Create a message</h2>
+      {% if error %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ error }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"></button>
+      </div>
+      {% endif %}
+
+      <!-- Add a new message form -->
+      <form
+        action="{{ url_for('add_message', username=session['username']) }}"
+        method="post"
+        class="needs-validation"
+        novalidate>
+        <div class="mb-3">
+          <label for="title" class="form-label">Title</label>
+          <input
+            type="text"
+            name="title"
+            id="title"
+            placeholder="What issues have you encountered?"
+            class="form-control"
+            maxlength="255"
+            required />
+          <div class="invalid-feedback">Please enter a title</div>
+        </div>
+        <div class="mb-3">
+          <label for="content" class="form-label">Message</label>
+          <textarea
+            type="content"
+            name="content"
+            id="content"
+            class="form-control"
+            rows="5"
+            minlength="10"
+            placeholder="Please describe the details of what you put in the title with a minimum of 10 characters."
+            required></textarea>
+          <div class="invalid-feedback">Minimum 10 characters</div>
+        </div>
+
+        <div>
+          <button type="submit" class="btn btn-success bg-opacity-75">
+            Post your message
+          </button>
+        </div>
+      </form>
     </div>
   </div>
-</form>
+</div>
+
 {% endblock%}

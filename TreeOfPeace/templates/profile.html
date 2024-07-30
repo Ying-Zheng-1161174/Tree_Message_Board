@@ -1,212 +1,199 @@
-{% extends 'base.html' %} {% block title %}Profile{%endblock%} {% block content
-%} {% if mode == 'edit' %}
-<h1>Edit profile</h1>
-{% if error %}
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-  {{ error }}
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-{% endif %}
-<!-- edit profile -->
-<form
-  action="{{ url_for('profile', username=account['username']) }}"
-  method="POST"
-  enctype="multipart/form-data"
-  class="needs-validation"
-  novalidate>
-  <div>
-    <p>Edit image</p>
-    <div id="profile_image_wrapper">
-      {% if account['profile_image'] %}
-      <div>
-        <img
-          id="profile_image"
-          src="{{ url_for('static', filename=account['profile_image']) }}"
-          alt="profile_image"
-          width="100px"
-          height="100px" />
-        <div id="image_buttons">
-          <button
-            type="button"
-            onclick="document.getElementById('profile_image_input').click();">
-            Change picture
-          </button>
-          <button type="button" id="remove_image_button">Delete</button>
+{% extends 'base.html' %}
+{% block title %}Profile{% endblock %}
+{% block content %}
+
+<div class="container mt-5">
+  <div class="row justify-content-center">
+    <div class="col-md-8 col-lg-6">
+      <div class="card">
+        <div class="card-body">
+          {% if mode == 'edit' %}
+
+            {% if error %}
+              <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ error }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endif %}
+            
+            <!-- edit profile -->
+            <form action="{{ url_for('profile', username=account['username']) }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+              <div class="mb-3">
+                <p>Profile Image</p>
+                <div id="profile_image_wrapper">
+                  {% if account['profile_image'] %}
+                    <img id="profile_image" src="{{ url_for('static', filename=account['profile_image']) }}" alt="profile_image" class="img-thumbnail mb-2" style="width: 100px; height: 100px">
+                    <div id="image_buttons">
+                      <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('profile_image_input').click();">Change picture</button>
+                      <button type="button" id="remove_image_button" class="btn btn-sm btn-danger bg-opacity-50">Delete</button>
+                    </div>
+                  {% else %}
+                    <button type="button" id="add_image_button" class="btn btn-sm btn-secondary" onclick="document.getElementById('profile_image_input').click();">Add image</button>
+                  {% endif %}
+                </div>
+                <input type="file" name="profile_image" id="profile_image_input" class="d-none" accept="image/*">
+                <input type="hidden" name="remove_image" id="remove_image" value="false">
+              </div>
+
+              <div class="mb-3">
+                <label for="location" class="form-label">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  id="email"
+                  placeholder="Email"
+                  value="{{ account['email'] }}"
+                  pattern="[^@]+@[^@]+\.[^@]+"
+                  class="form-control"
+                  required />
+                <div class="invalid-feedback">Invalid email address</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="firstname" class="form-label">First Name</label>
+                <input
+                  type="text"
+                  name="firstname"
+                  id="firstname"
+                  placeholder="First Name"
+                  value="{{ account['first_name'] }}"
+                  pattern="[A-Za-z]*"
+                  class="form-control"
+                  required />
+                <div class="invalid-feedback">Please enter letters (a-z,A-Z) only</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="lastname" class="form-label">Last Name</label>
+                <input
+                  type="text"
+                  name="lastname"
+                  id="lastname"
+                  placeholder="Last Name"
+                  value="{{ account['last_name'] }}"
+                  pattern="[A-Za-z]*"
+                  class="form-control"
+                  required />
+                <div class="invalid-feedback">Please enter letters (a-z,A-Z) only</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="birthdate" class="form-label">Date of Birth</label>
+                <input
+                  type="date"
+                  name="birthdate"
+                  id="birthdate"
+                  max="{{currentdate}}"
+                  value="{{currentdate}}"
+                  placeholder="Date of Birth"
+                  value="{{ account['birth_date'] }}"
+                  class="form-control"
+                  required />
+                <div class="invalid-feedback">Please select a past date</div>
+              </div>
+
+              <div class="mb-3">
+                <label for="location" class="form-label">Location</label>
+                <input
+                  type="text"
+                  name="location"
+                  id="location"
+                  placeholder="eg: 'Lincoln, Canterbury', 'New Zealand'"
+                  value="{{ account['location'] }}"
+                  class="form-control"
+                  required />
+                <div class="invalid-feedback">Location cannot be empty</div>
+              </div>
+              
+              <div class="d-grid gap-3 col-lg-4 col-md-6 col-sm-12 ms-0">
+                <button type="submit" class="btn btn-success bg-opacity-75">Save</button>
+                <a href="{{ url_for('profile', username=session['username']) }}" class="ms-1 text-decoration-none">Cancel</a>
+              </div>
+            </form>
+
+          {% else %}
+            <!-- View mode -->
+            {% if msg %}
+              <div class="alert alert-success alert-dismissible fade show" role="alert">
+                {{ msg }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+              </div>
+            {% endif %}
+
+            <div class="container mb-4">
+              <table class="table table-borderless">
+                <tr>
+                  <th class="align-bottom">Profile image:</th>
+                  <td>
+                    {% if account['profile_image'] %}
+                      <img src="{{ url_for('static', filename=account['profile_image']) }}" alt="profile_image" class="img-thumbnail" style="width: 100px; height: 100px;">
+                    {% else %}
+                      None
+                    {% endif %}
+                  </td>
+                </tr>
+                <tr>
+                  <th>Email:</th>
+                  <td>{{ account['email'] }}</td>
+                </tr>
+                <tr>
+                  <th>First Name:</th>
+                  <td>{{ account['first_name'] }}</td>
+                </tr>
+                <tr>
+                  <th>Last Name:</th>
+                  <td>{{ account['last_name'] }}</td>
+                </tr>
+                <tr>
+                  <th>Date Of Birth:</th>
+                  <td>{{ account['birth_date'] }}</td>
+                </tr>
+                <tr>
+                  <th>Location:</th>
+                  <td>{{ account['location'] }}</td>
+                </tr>
+              </table>
+            </div>
+
+            <!-- Only loggedin user is session user can edit their profile -->
+            {% if session['username'] == account['username'] %}
+              <div class="d-grid col-lg-4 col-md-6 col-sm-12 ms-3">
+                <a href="{{ url_for('profile', username=account['username'], mode='edit') }}" class="btn btn-success bg-opacity-75">Edit Profile</a>
+              </div>
+            {% endif %}
+
+            <!-- Only admin can see and edit the role and status of a user -->
+            {% if session['role'] == 'admin' %}
+            <div class="container mt-4 px-3 border-top border-success">
+              <form action="{{ url_for('admin', username = account['username']) }}" method="POST" class="mt-4">
+                <div class="mb-3">
+                  <label for="role" class="form-label">Role:</label>
+                  <select name="role" id="role" class="form-select">
+                    <option value="admin" {{ 'selected' if account.role == 'admin' else '' }}>Admin</option>
+                    <option value="moderator" {{ 'selected' if account.role == 'moderator' else '' }}>Moderator</option>
+                    <option value="member" {{ 'selected' if account.role == 'member' else '' }}>Member</option>
+                  </select>
+                </div>
+
+                <div class="mb-4">
+                  <label for="status" class="form-label">Status:</label>
+                  <select name="status" id="status" class="form-select">
+                    <option value="active" {{ 'selected' if account.status == 'active' else '' }}>Active</option>
+                    <option value="inactive" {{ 'selected' if account.status == 'inactive' else '' }}>Inactive</option>
+                  </select>
+                </div>
+
+                <div class="d-grid gap-3 col-lg-4 col-md-6 col-sm-12 ms-0">
+                  <button type="submit" class="btn btn-success bg-opacity-75">Save Changes</button>
+                </div>
+              </form>
+            </div>
+            {% endif %}
+          {% endif %}
         </div>
-        {% else %}
-        <button
-          type="button"
-          id="add_image_button"
-          onclick="document.getElementById('profile_image_input').click();">
-          Add image
-        </button>
-        {% endif %}
       </div>
     </div>
-    <input
-      type="file"
-      name="profile_image"
-      id="profile_image_input"
-      class="hidden"
-      accept="image/*" />
-    <input type="hidden" name="remove_image" id="remove_image" value="false" />
   </div>
-
-  <div class="mb-3">
-    <label for="location" class="form-label">Email</label>
-    <input
-      type="email"
-      name="email"
-      id="email"
-      placeholder="Email"
-      value="{{ account['email'] }}"
-      pattern="[^@]+@[^@]+\.[^@]+"
-      class="form-control"
-      required />
-    <div class="invalid-feedback">Invalid email address</div>
-  </div>
-  <div class="mb-3">
-    <label for="firstname" class="form-label">First Name</label>
-    <input
-      type="text"
-      name="firstname"
-      id="firstname"
-      placeholder="First Name"
-      value="{{ account['first_name'] }}"
-      pattern="[A-Za-z]*"
-      class="form-control"
-      required />
-    <div class="invalid-feedback">Please enter letters (a-z,A-Z) only</div>
-  </div>
-  <div class="mb-3">
-    <label for="lastname" class="form-label">Last Name</label>
-    <input
-      type="text"
-      name="lastname"
-      id="lastname"
-      placeholder="Last Name"
-      value="{{ account['last_name'] }}"
-      pattern="[A-Za-z]*"
-      class="form-control"
-      required />
-    <div class="invalid-feedback">Please enter letters (a-z,A-Z) only</div>
-  </div>
-  <div class="mb-3">
-    <label for="birthdate" class="form-label">Date of Birth</label>
-    <input
-      type="date"
-      name="birthdate"
-      id="birthdate"
-      max="{{currentdate}}"
-      value="{{currentdate}}"
-      placeholder="Date of Birth"
-      value="{{ account['birth_date'] }}"
-      class="form-control"
-      required />
-    <div class="invalid-feedback">Please select a past date</div>
-  </div>
-  <div class="mb-3">
-    <label for="location" class="form-label">Location</label>
-    <input
-      type="text"
-      name="location"
-      id="location"
-      placeholder="Location"
-      value="{{ account['location'] }}"
-      class="form-control"
-      required />
-    <div class="invalid-feedback">Location cannot be empty</div>
-  </div>
-  <button type="submit" class="btn btn-primary">Save</button>
-  <a href="{{ url_for('profile', username=session['username']) }}">Cancel</a>
-</form>
-<!-- view mode -->
-{% else %}
-<h1>profile</h1>
-{% if msg %}
-<div class="alert alert-success alert-dismissible fade show" role="alert">
-  {{ msg }}
-  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-</div>
-{% endif %}
-<div>
-  {% if (account['profile_image'] != none) %}
-  <p>profile image:</p>
-  <img
-    src="{{ url_for('static', filename=account['profile_image']) }}"
-    alt="profile_image"
-    width="100px"
-    height="100px" />
-  {% else %}
-  <p>profile image: None</p>
-  {% endif %}
-  <table>
-    <tr>
-      <td>Email:</td>
-      <td>{{ account['email']}}</td>
-    </tr>
-    <tr>
-      <td>First Name:</td>
-      <td>{{ account['first_name']}}</td>
-    </tr>
-    <tr>
-      <td>Last Name:</td>
-      <td>{{ account['last_name']}}</td>
-    </tr>
-    <tr>
-      <td>Date Of Birth:</td>
-      <td>{{ account['birth_date']}}</td>
-    </tr>
-    <tr>
-      <td>Location:</td>
-      <td>{{ account['location']}}</td>
-    </tr>
-  </table>
-  <!-- Only loggedin user is session user can edit their profile -->
-  {% if session['username'] == account['username'] %}
-  <div>
-  <button>
-    <a
-      href="{{ url_for('profile', username=account['username'], mode='edit') }}">
-      Edit Profile
-    </a>
-  </button>
-  </div>
-  {% endif %}
-</div>
-<div>
-  <!-- Only admin can see and edit the role and status of a user -->
-  {% if session['role'] == 'admin' %}
-    <form action="{{ url_for('admin', username = account['username']) }}" method="POST">
-      <table>
-        <tr>
-          <td><label for="role">Role:</label></td>
-            <td>
-              <select name="role" id="role">
-                <option value="admin" {{ 'selected' if account.role == 'admin' else '' }}>Admin</option>
-                <option value="moderator" {{ 'selected' if account.role == 'moderator' else '' }}>Moderator</option>
-                <option value="member" {{ 'selected' if account.role == 'member' else '' }}>Member</option>
-              </select>
-            </td>
-        </tr>
-        <tr>
-          <td><label for="status">Status</label></td>
-            <td>
-              <select name="status" id="status">
-                <option value="active" {{ 'selected' if account.status == 'active' else '' }}>Active</option>
-                <option value="inactive" {{ 'selected' if account.status == 'inactive' else '' }}>Inactive</option>
-              </select>
-            </td>
-        </tr>
-        <tr>
-          <td>
-            <button type="submit">Save</button>
-          </td>
-        </tr>
-      </table>
-    </form>
-  {% endif %}
 </div>
 
-
-{% endif %} {% endblock %}
+{% endblock %}

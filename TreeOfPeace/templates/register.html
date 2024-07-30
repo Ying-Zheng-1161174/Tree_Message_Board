@@ -1,132 +1,157 @@
-{% extends 'base.html' %} {% block title %}Sign up{%endblock%} {% block content
-%}
-<h1>Sign up</h1>
-<!-- Register form -->
-{% if error %}
-<div class="alert alert-danger alert-dismissible fade show" role="alert">
-  {{ error }}
-  <button
-    type="button"
-    class="btn-close"
-    data-bs-dismiss="alert"
-    aria-label="Close"></button>
-</div>
-{% endif %}
+{% extends 'base.html' %} {% block title %}Sign up{% endblock %} {% block
+content %}
 
-<form
-  action="{{ url_for('register')}}"
-  method="post"
-  class="needs-validation"
-  novalidate>
-  <div class="mb-3">
-    <label for="username" class="form-label">Username</label>
-    <input
-      type="text"
-      name="username"
-      id="username"
-      placeholder="Only characters and numbers"
-      class="form-control"
-      required />
-    <div class="invalid-feedback">
-      Username must contain only characters and numbers
+<div class="container">
+  <div class="row justify-content-center">
+    <div class="col-sm-10 col-md-8 col-lg-6">
+      <h2 class="text-center mb-4">Sign up</h2>
+
+      {% if error %}
+      <div class="alert alert-danger alert-dismissible fade show" role="alert">
+        {{ error }}
+        <button
+          type="button"
+          class="btn-close"
+          data-bs-dismiss="alert"
+          aria-label="Close"></button>
+      </div>
+      {% endif %}
+
+      <div class="card">
+        <div class="card-body">
+          <form
+            action="{{ url_for('register')}}"
+            method="post"
+            class="needs-validation"
+            novalidate>
+            <div class="mb-3">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                name="username"
+                id="username"
+                placeholder="Only characters and numbers"
+                class="form-control"
+                maxlength="20"
+                required />
+              <div class="invalid-feedback">
+                Username must contain only characters and numbers
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                name="password"
+                id="password"
+                placeholder="8+ characters (at least 1 letter & 1 number)"
+                pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}"
+                class="form-control"
+                required />
+              <div class="invalid-feedback">
+                Invalid password, please follow the required pattern
+              </div>
+            </div>
+
+            <div class="mb-3">
+              <label for="confirm_password" class="form-label">
+                Confirm Password
+              </label>
+              <input
+                type="password"
+                name="confirm_password"
+                id="confirm_password"
+                placeholder="Confirm your password"
+                pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}"
+                class="form-control"
+                required />
+              <span id="message_confirm_password"></span>
+            </div>
+
+            <div class="mb-3">
+              <label for="email" class="form-label">Email</label>
+              <input
+                type="email"
+                name="email"
+                id="email"
+                placeholder="Email"
+                class="form-control"
+                pattern="[^@]+@[^@]+\.[^@]+"
+                required />
+              <div class="invalid-feedback">Invalid email address</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="firstname" class="form-label">First Name</label>
+              <input
+                type="text"
+                name="firstname"
+                id="firstname"
+                placeholder="First Name"
+                pattern="[A-Za-z]*"
+                class="form-control"
+                maxlength="50"
+                required />
+              <div class="invalid-feedback">Please enter letters only</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="lastname" class="form-label">Last Name</label>
+              <input
+                type="text"
+                name="lastname"
+                id="lastname"
+                placeholder="Last Name"
+                class="form-control"
+                pattern="[A-Za-z]*"
+                maxlength="50"
+                required />
+              <div class="invalid-feedback">Please enter letters only</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="birthdate" class="form-label">Date of Birth</label>
+              <input
+                type="date"
+                name="birthdate"
+                id="birthdate"
+                max="{{currentdate}}"
+                value="{{currentdate}}"
+                placeholder="Date of Birth"
+                class="form-control"
+                required />
+              <div class="invalid-feedback">Please choose a valid date</div>
+            </div>
+
+            <div class="mb-3">
+              <label for="location" class="form-label">Location</label>
+              <input
+                type="text"
+                name="location"
+                id="location"
+                placeholder="eg: 'Lincoln, Canterbury', 'New Zealand'"
+                class="form-control"
+                required />
+              <div class="invalid-feedback">Location cannot be empty</div>
+            </div>
+
+            <div class="d-grid gap-2">
+              <button type="submit" class="btn btn-success bg-opacity-75">
+                Sign up
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+
+      <p class="text-center mt-3">
+        Already have an account?
+        <a href="{{ url_for('login') }}" class="text-decoration-none">Log in</a>
+      </p>
     </div>
   </div>
-  <div class="mb-3">
-    <label for="password" class="form-label">Password</label>
-    <input
-      type="password"
-      name="password"
-      id="password"
-      placeholder="8+ characters (at least 1 letter & 1 number)"
-      pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}"
-      class="form-control"
-      required />
-    <div class="invalid-feedback">
-      Invalid password, please follow the required pattern
-    </div>
-  </div>
-  <div class="mb-3">
-    <label for="password" class="form-label">Confirm Password</label>
-    <input
-      type="password"
-      name="confirm_password"
-      id="confirm_password"
-      placeholder="Confirm your password"
-      pattern="(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}"
-      class="form-control"
-      required />
-    <span id="message_confirm_password"></span>
-  </div>
-  <!-- invalid:'Invalid password, please try again' -->
-  <div class="mb-3">
-    <label for="location" class="form-label">Email</label>
-    <input
-      type="email"
-      name="email"
-      id="email"
-      placeholder="Email"
-      class="form-control"
-      pattern="[^@]+@[^@]+\.[^@]+"
-      required />
-    <div class="invalid-feedback">Invalid email address</div>
-  </div>
-  <!-- invalid:'Invalid email address!' -->
-  <div class="mb-3">
-    <label for="firstname" class="form-label">First Name</label>
-    <input
-      type="text"
-      name="firstname"
-      id="firstname"
-      placeholder="First Name"
-      pattern="[A-Za-z]*"
-      class="form-control"
-      required />
-    <div class="invalid-feedback">Please enter letters only</div>
-  </div>
-  <!-- invalid:'Please enter letters (a-z,A-Z) only' -->
-  <div class="mb-3">
-    <label for="lastname" class="form-label">Last Name</label>
-    <input
-      type="text"
-      name="lastname"
-      id="lastname"
-      placeholder="Last Name"
-      class="form-control"
-      pattern="[A-Za-z]*"
-      required />
-    <div class="invalid-feedback">Please enter letters only</div>
-  </div>
-  <!-- invalid:'Please enter letters (a-z,A-Z) only' -->
-  <div class="mb-3">
-    <label for="birthdate" class="form-label">Date of Birth</label>
-    <input
-      type="date"
-      name="birthdate"
-      id="birthdate"
-      max="{{currentdate}}"
-      value="{{currentdate}}"
-      placeholder="Date of Birth"
-      class="form-control"
-      required />
-    <div class="invalid-feedback">Please choose a valid date</div>
-  </div>
-  <div class="mb-3">
-    <label for="location" class="form-label">Location</label>
-    <input
-      type="text"
-      name="location"
-      id="location"
-      placeholder="Location"
-      class="form-control"
-      required />
-    <div class="invalid-feedback">Location cannot be empty</div>
-    <p>
-      Already have an account?
-      <a href="{{ url_for('login') }}">Log in</a>
-    </p>
-  </div>
-  <button type="submit" class="btn btn-primary">Sign up</button>
-</form>
+</div>
 
 <script src="{{ url_for('static', filename='js/validatePassword.js') }}"></script>
 

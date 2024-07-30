@@ -1,34 +1,74 @@
-{% extends 'base.html' %} {% block title %}User list{%endblock%} {% block
+{% extends 'base.html' %} {% block title %}User List{% endblock %} {% block
 content %}
 
-<!-- List users profile -->
-<form action="{{ url_for('admin') }}" method="GET">
-  <input
-    type="text"
-    name="search"
-    placeholder="Search user"
-    value="{{ search }}" />
-  <button type="submit">Search</button>
-</form>
-{% if users %} {% for user in users %}
-<div>
-  <div class="contanier">
-    {% if user.profile_image %}
-    <img
-      src="{{ url_for('static', filename=user.profile_image) }}"
-      alt="profile_image"
-      width="20" />
-    {% endif %}
-    <a href="{{ url_for('profile', username = user.username) }}">
-      {{ user.username }}
-    </a>
-    <span>{{ user.first_name }}</span>
-    <span>{{ user.last_name }}</span>
-    <br />
-    <span>{{ user.location }}</span>
+<div class="container mt-4">
+  <h2 class="mb-4">User List</h2>
+
+  <!-- Search form -->
+  <div class="row justify-content-start">
+    <div class="col-md-6 col-lg-4">
+      <form action="{{ url_for('admin') }}" method="GET" class="mb-4">
+        <div class="input-group">
+          <input
+            type="text"
+            name="search"
+            class="form-control"
+            value="{{ search }}" />
+          <button type="submit" class="btn btn-success bg-opacity-75">
+            Search
+          </button>
+        </div>
+        <small class="text-muted">eg: username, first name, last name</samll>
+      </form>
+    </div>
   </div>
-  <br />
+
+  {% if users %}
+  <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 row-cols-xl-4 g-4">
+    {% for user in users %}
+    <div class="col">
+      <div class="card h-100">
+        <div class="card-body d-flex">
+          <div class="flex-shrink-0 me-3">
+            {% if user.profile_image %}
+            <img
+              src="{{ url_for('static', filename=user.profile_image) }}"
+              alt="profile_image"
+              class="rounded-circle"
+              width="65"
+              height="65" />
+            {% else %}
+            <img
+              src="{{ url_for('static', filename='upload/no_image.png') }}"
+              alt="default profile"
+              class="rounded-circle"
+              width="65"
+              height="65" />
+            {% endif %}
+          </div>
+          <div class="flex-grow-1">
+            <h5 class="card-title mb-1">
+              <a
+                href="{{ url_for('profile', username = user.username) }}"
+                class="text-decoration-none">
+                {{ user.username }}
+              </a>
+            </h5>
+            <p class="card-text mb-1">
+              {{ user.first_name }} {{ user.last_name }}
+            </p>
+            <p class="card-text">
+              <small class="text-muted">{{ user.location }}</small>
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  {% else %}
+  <p class="alert alert-info">No users matched your search.</p>
+  {% endif %}
 </div>
-{% endfor %} {% else %}
-<p>No users matched your search.</p>
-{% endif %} {% endblock%}
+
+{% endblock %}
