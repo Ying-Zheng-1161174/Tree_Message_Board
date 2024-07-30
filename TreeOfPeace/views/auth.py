@@ -59,7 +59,6 @@ def register():
             cursor.execute('INSERT INTO users (username, password_hash, email, first_name, last_name, birth_date, location, profile_image, role, status) VALUES \
                             (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', 
                             (userName, password_hash, email, firstName, lastName, birthDate, location, DEFAULT_IMAGE, DEFAULT_ROLE, DEFAULT_STATUS ))
-            cursor._connection.commit()
             # After registered, redirect user to login page
             return render_template('login.html', success='Registration successful! please login.')
 

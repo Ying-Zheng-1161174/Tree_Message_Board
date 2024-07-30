@@ -36,7 +36,6 @@ def user_messages(username):
         try:
             # Delete message and replies (ON DELETE CASCADE)
             cursor.execute('DELETE FROM messages WHERE message_id = %s', (messageID,))
-            cursor._connection.commit()
             # If delete by moderator or admin, redirect to home page
             if session['role'] in ['moderator','admin']:
                 return redirect(url_for('home'))
@@ -73,7 +72,6 @@ def user_replies(username):
             try:
                 # Delete a reply
                 cursor.execute('DELETE FROM replies WHERE reply_id = %s', (replyID,))
-                cursor._connection.commit()
                 if session['role'] in ['moderator','admin']:
                     return redirect(url_for('message_detail', message_id= messageID))
                 else:
@@ -123,7 +121,6 @@ def profile(username):
             # Update user information
             cursor.execute('UPDATE users SET email = %s, first_name = %s, last_name = %s, birth_date = %s, location = %s, profile_image = %s WHERE user_id = %s', 
                             (email, firstName, lastName, birthDate, location, profileImagePath, session['id']))
-            cursor._connection.commit()
             session['message'] = 'Profile updated successfully!'
     
             return redirect(url_for('profile', username=session['username']))
@@ -179,7 +176,6 @@ def change_password(username):
             password_hash = hashing.hash_value(newPassword, PASSWORD_SALT)  
             cursor.execute('UPDATE users SET password_hash = %s WHERE user_id = %s', 
                             (password_hash, session['id']))
-            cursor._connection.commit()
             return render_template('change_password.html', username=session['username'], msg = 'Password updated successfully!')
         
         if error:

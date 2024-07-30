@@ -99,7 +99,6 @@ def add_reply(message_id):
                             INSERT INTO replies (message_id, user_id, content, created_at) 
                             VALUES (%s, %s, %s, CURRENT_TIMESTAMP)
                             ''', (message_id, user_id, reply_content))
-            cursor._connection.commit()
             return redirect(url_for('message_detail', message_id=message_id))
         except Exception:
             return render_template('error.html', error = 'Something went wrong. Please try again later.')
@@ -126,7 +125,6 @@ def add_message(username = None):
                 cursor.execute('''
                                 INSERT INTO messages (user_id, title, content, created_at) 
                                 VALUES (%s, %s, %s, CURRENT_TIMESTAMP)''', (user_id, title, content))
-                cursor._connection.commit()
 
                 # Get message id 
                 cursor.execute('SELECT LAST_INSERT_ID() AS message_id')

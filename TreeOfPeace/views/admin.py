@@ -53,7 +53,7 @@ def admin(username=None):
             try:
                 cursor.execute('UPDATE users SET role = %s, status = %s WHERE username = %s', 
                                 (role, status, username))
-                cursor._connection.commit()
+    
                 session['message'] = 'Change saved!'
                 return redirect(url_for('profile', username = username))
             except Exception:

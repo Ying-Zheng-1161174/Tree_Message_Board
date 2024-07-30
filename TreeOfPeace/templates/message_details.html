@@ -22,9 +22,8 @@ content %}
         </small>
       </div>
     </div>
-    <!-- Only loggedin user is session user, or moderator or admin can delete a message -->
-    {% if session['loggedin'] and (message.username == session['username'] or
-    session['role'] in ['moderator','admin']) %}
+    <!-- Only moderator or admin can delete a message -->
+    {% if session['loggedin'] and session['role'] in ['moderator','admin'] %}
     <div class="card-footer d-flex justify-content-end align-items-center">
       <form
         action="{{ url_for('user_messages', username = session['username']) }}"
@@ -65,9 +64,9 @@ content %}
           <small class="text-muted">{{ reply.reply_created_at }}</small>
         </div>
         <div class="mb-2">
-          <!-- Only loggedin user is session user, or moderator or admin can delete a reply -->
-          {% if session['loggedin'] and (reply.reply_username ==
-          session['username'] or session['role'] in ['moderator','admin']) %}
+          <!-- Only moderator or admin can delete a reply -->
+          {% if session['loggedin'] and session['role'] in ['moderator','admin']
+          %}
           <form
             action="{{ url_for('user_replies', username = session['username']) }}"
             method="POST"
