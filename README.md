@@ -70,10 +70,15 @@ Enjoy!
 5. You can register a new account or use the existing accounts to try it out. Usernames and passwords are as follows:
 
 ```
-'member1', 'member1pass',
-'member2', 'member2pass', and so on.
-'moderator1', 'moderator1pass',
-'moderator2', 'moderator2pass',
-'admin1', 'admin1pass',
-'admin2', 'admin2pass',
+member1 : member1pass
+member2 : member2pass
+so on and so forth
+
+moderator1 : moderator1pass
+moderator2 : moderator2pass
+moderator3 : moderator3pass
+moderator4 : moderator4pass
+moderator5 : moderator5pass
+admin1 : admin1pass
+admin2 : admin2pass
 ```
