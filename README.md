@@ -1,5 +1,7 @@
 # Tree of Peace
 
+Trees and hedges can lead to disputes between neighbors, such as falling leaves or blocked views. This app helps homeowners find peaceful solutions to these issues without resorting to drastic measures like chainsaws. Join the platform to communicate with others and resolve tree-related conflicts in a friendly and effective way.
+
 ## Running This App
 
 1. Open the project in Visual Studio Code.
