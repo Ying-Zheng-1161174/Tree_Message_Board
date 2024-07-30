@@ -31,17 +31,17 @@ def user_messages(username):
             return render_template('error.html', error = 'Something went wrong. Please try again later.') 
     else:
         messageID = request.form['message_id']
-        # Allow only loggedin user, admin and moderator to delete a message
-        # if username == session['username'] or session['role'] in ['moderator','admin']:
+        source = request.args.get('source', 'user_messages')
+
         try:
             # Delete message and replies (ON DELETE CASCADE)
             cursor.execute('DELETE FROM messages WHERE message_id = %s', (messageID,))
-            # If delete by moderator or admin, redirect to home page
-            if session['role'] in ['moderator','admin']:
-                return redirect(url_for('home'))
-            # If delete by user, redirect to user's messages page
+            # If delete from user messages page, redirect to same page
+            if source == 'user_messages':
+                return redirect(url_for('user_messages', username = session['username']))     
+            # If delete by moderator or admin from the details page, redirect them to home page
             else:
-                return redirect(url_for('user_messages', username = session['username']))
+                return redirect(url_for('home'))
         except Exception:
             return render_template('error.html', error = 'Something went wrong. Please try again later.') 
 
@@ -68,15 +68,15 @@ def user_replies(username):
     else:
         replyID = request.form['reply_id']
         messageID = request.form['message_id']
-        if username == session['username'] or session['role'] in ['moderator','admin']:
-            try:
-                # Delete a reply
-                cursor.execute('DELETE FROM replies WHERE reply_id = %s', (replyID,))
-                if session['role'] in ['moderator','admin']:
-                    return redirect(url_for('message_detail', message_id= messageID))
-                else:
-                    return redirect(url_for('user_replies', username = session['username']))
-            except Exception:
+        source = request.args.get('source', 'user_replies')
+        try:
+            # Delete a reply
+            cursor.execute('DELETE FROM replies WHERE reply_id = %s', (replyID,))
+            if source == 'user_replies':
+                return redirect(url_for('user_replies', username = session['username']))
+            else:
+                return redirect(url_for('message_detail', message_id= messageID))
+        except Exception:
                 return render_template('error.html', error = 'Something went wrong. Please try again later.') 
 
 @app.route('/<username>/profile', methods=['GET', 'POST'])

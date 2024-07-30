@@ -26,7 +26,7 @@ content %}
     {% if session['loggedin'] and session['role'] in ['moderator','admin'] %}
     <div class="card-footer d-flex justify-content-end align-items-center">
       <form
-        action="{{ url_for('user_messages', username = session['username']) }}"
+        action="{{ url_for('user_messages', username = session['username'], source='message_details_message') }}"
         method="POST"
         class="d-inline">
         <input
@@ -68,7 +68,7 @@ content %}
           {% if session['loggedin'] and session['role'] in ['moderator','admin']
           %}
           <form
-            action="{{ url_for('user_replies', username = session['username']) }}"
+            action="{{ url_for('user_replies', username = session['username'], source='message_details_reply') }}"
             method="POST"
             class="mt-2">
             <input type="hidden" name="reply_id" value="{{ reply.reply_id }}" />

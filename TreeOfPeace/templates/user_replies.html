@@ -27,7 +27,7 @@ content %}
           Reply to Message # {{ reply.message_title }}
         </span>
         <form
-          action="{{ url_for('user_replies', username=session['username']) }}"
+          action="{{ url_for('user_replies', username=session['username'], source='user_replies') }}"
           method="POST"
           class="ml-auto">
           <input type="hidden" name="reply_id" value="{{ reply.reply_id }}" />

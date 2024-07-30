@@ -27,7 +27,7 @@ content %}
           {{ message.content | truncate_content(100) }}
         </p>
         <form
-          action="{{ url_for('user_messages', username=session['username']) }}"
+          action="{{ url_for('user_messages', username=session['username'], source='user_messages') }}"
           method="POST"
           class="ml-auto">
           <input
