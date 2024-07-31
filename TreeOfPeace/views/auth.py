@@ -111,7 +111,7 @@ def logout():
     session.pop('username', None)
 
     # Redirect to login page
-    return redirect(url_for('login'))
+    return redirect(url_for('home'))
 
 @app.errorhandler(404)
 def page_not_found(e):
