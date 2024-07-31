@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
-{% block title %}Profile{% endblock %}
+{% block title %} Profile {% endblock %}
+
 {% block content %}
 
 <div class="container mt-5">
@@ -7,8 +8,9 @@
     <div class="col-md-8 col-lg-6">
       <div class="card">
         <div class="card-body">
+          <!-- Edit mode -->
           {% if mode == 'edit' %}
-
+            <!-- Display error message when not able to save changes -->
             {% if error %}
               <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 {{ error }}
@@ -16,19 +18,35 @@
               </div>
             {% endif %}
             
-            <!-- edit profile -->
-            <form action="{{ url_for('profile', username=account['username']) }}" method="POST" enctype="multipart/form-data" class="needs-validation" novalidate>
+            <form 
+              action="{{ url_for('profile', username=account['username']) }}" 
+              method="POST" 
+              enctype="multipart/form-data" 
+              class="needs-validation" 
+              novalidate>
               <div class="mb-3">
                 <p>Profile Image</p>
                 <div id="profile_image_wrapper">
                   {% if account['profile_image'] %}
-                    <img id="profile_image" src="{{ url_for('static', filename=account['profile_image']) }}" alt="profile_image" class="img-thumbnail mb-2" style="width: 100px; height: 100px">
+                    <img 
+                      id="profile_image" 
+                      src="{{ url_for('static', filename=account['profile_image']) }}" 
+                      alt="profile_image" 
+                      class="img-thumbnail mb-2" 
+                      style="width: 100px; height: 100px">
                     <div id="image_buttons">
-                      <button type="button" class="btn btn-sm btn-secondary" onclick="document.getElementById('profile_image_input').click();">Change picture</button>
+                      <button 
+                        type="button" 
+                        class="btn btn-sm btn-secondary" 
+                        onclick="document.getElementById('profile_image_input').click();">Change picture</button>
                       <button type="button" id="remove_image_button" class="btn btn-sm btn-danger bg-opacity-50">Delete</button>
                     </div>
                   {% else %}
-                    <button type="button" id="add_image_button" class="btn btn-sm btn-secondary" onclick="document.getElementById('profile_image_input').click();">Add image</button>
+                    <button 
+                      type="button" 
+                      id="add_image_button" 
+                      class="btn btn-sm btn-secondary" 
+                      onclick="document.getElementById('profile_image_input').click();">Add image</button>
                   {% endif %}
                 </div>
                 <input type="file" name="profile_image" id="profile_image_input" class="d-none" accept="image/*">
@@ -155,14 +173,14 @@
               </table>
             </div>
 
-            <!-- Only loggedin user is session user can edit their profile -->
+            <!-- Only owner can edit their profile -->
             {% if session['username'] == account['username'] %}
               <div class="d-grid col-lg-4 col-md-6 col-sm-12 ms-3">
                 <a href="{{ url_for('profile', username=account['username'], mode='edit') }}" class="btn btn-success bg-opacity-75">Edit Profile</a>
               </div>
             {% endif %}
 
-            <!-- Only admin can see and edit the role and status of a user -->
+            <!-- Only admin can change role and status of a user -->
             {% if session['role'] == 'admin' %}
             <div class="container mt-4 px-3 border-top border-success">
               <form action="{{ url_for('admin', username = account['username']) }}" method="POST" class="mt-4">

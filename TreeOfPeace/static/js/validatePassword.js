@@ -7,6 +7,7 @@ const check = function () {
     "message_confirm_password"
   );
 
+  // For change password function, check if oldPassword exist and not equal to new password
   if (oldPassword !== undefined) {
     if (oldPassword === password) {
       messagePassword.style.color = "red";
@@ -17,6 +18,7 @@ const check = function () {
     }
   }
 
+  // For both register and change password function, double confirm the input password
   if (password !== "" && confirmPassword !== "") {
     if (password === confirmPassword) {
       messageConfirmPassword.style.color = "green";
@@ -30,6 +32,7 @@ const check = function () {
   }
 };
 
+// Apply to different actions
 document.addEventListener("DOMContentLoaded", function () {
   document.getElementById("password").addEventListener("input", check);
   document.getElementById("confirm_password").addEventListener("input", check);

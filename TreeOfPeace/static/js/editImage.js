@@ -3,14 +3,17 @@ document.addEventListener("DOMContentLoaded", function () {
   const removeImageButton = document.getElementById("remove_image_button");
   const addImageButton = document.getElementById("add_image_button");
 
+  // Handle profile image change, upload an new image
   if (profileImageInput) {
     profileImageInput.addEventListener("change", loadFile);
   }
 
+  // Handle profile image remove
   if (removeImageButton) {
     removeImageButton.addEventListener("click", removeImage);
   }
 
+  // Handle profile image add
   if (addImageButton) {
     addImageButton.addEventListener("click", function () {
       profileImageInput.click();
@@ -55,7 +58,7 @@ function loadFile(event) {
   }
 
   if (addImageButton) {
-    // Hide "Add image" button
+    // Hide "Add image" button when new image uploaded
     addImageButton.style.display = "none";
   }
 
@@ -74,8 +77,7 @@ function removeImage() {
   const imageButtons = document.getElementById("image_buttons");
 
   if (image) {
-    image.remove();
-    // image.style.display = "none"; // Hide image
+    image.remove(); // Hide image when it been deleted
   }
 
   if (imageButtons) {
@@ -86,6 +88,7 @@ function removeImage() {
     imageInput.value = ""; // Clear file input
   }
 
+  // Create the 'Add Image' button when the profile image is deleted
   let addImageButton = document.getElementById("add_image_button");
   if (!addImageButton) {
     addImageButton = document.createElement("button");
@@ -98,7 +101,7 @@ function removeImage() {
     };
     profileImageWrapper.appendChild(addImageButton);
   }
-  // Show "Add image" button
+  // Display "Add image" button
   addImageButton.style.display = "block";
 
   document.getElementById("remove_image").value = "true";

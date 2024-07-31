@@ -1,9 +1,12 @@
-{% extends 'base.html' %} {% block title %}User Replies{% endblock %} {% block
-content %}
+{% extends 'base.html' %} 
+{% block title %} User Replies {% endblock %} 
+
+{% block content %}
 
 <div class="container mt-4">
   <h2 class="mb-4">User Replies</h2>
 
+  <!-- Display user replies -->
   {% if replies %}
   <div class="list-group">
     {% for reply in replies %}

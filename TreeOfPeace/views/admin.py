@@ -47,6 +47,7 @@ def admin(username=None):
             else:
                 return redirect(url_for('profile', username = username))
             
+        # Handle role and status update 
         elif request.method == 'POST' and username is not None:
             role = request.form['role']
             status = request.form['status']

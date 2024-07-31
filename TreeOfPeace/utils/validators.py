@@ -1,5 +1,6 @@
 import re
 
+# Validate the same section for both the registration and profile edit page.
 def validate_user_data(email, firstName, lastName, birthDate, location):
     if not re.match(r'[^@]+@[^@]+\.[^@]+', email):
         return 'Invalid email address'

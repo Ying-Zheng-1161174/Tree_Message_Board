@@ -60,9 +60,7 @@ def register():
                             (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)', 
                             (userName, password_hash, email, firstName, lastName, birthDate, location, DEFAULT_IMAGE, DEFAULT_ROLE, DEFAULT_STATUS ))
             # After registered, redirect user to login page
-            return render_template('login.html', success='Registration successful! please login.')
-
-            
+            return render_template('login.html', success='Registration successful! please login.')           
                     
         except Exception:
             return render_template('error.html', error = 'Something went wrong. Please try again later.')       
@@ -85,19 +83,24 @@ def login():
             cursor.execute('SELECT * FROM users WHERE username = %s', (userName,))
             account = cursor.fetchone()
             if account and hashing.check_value(account['password_hash'], userPassword, PASSWORD_SALT):
-                # If password correct, create session data
-                session['loggedin'] = True
-                session['id'] = account['user_id']
-                session['username'] = account['username']
-                session['role'] = account['role']
-                # redirect to home page
-                return redirect(url_for('home'))
+                # Check account status
+                if account['status'] == 'active':
+                    # If password correct, create session data
+                    session['loggedin'] = True
+                    session['id'] = account['user_id']
+                    session['username'] = account['username']
+                    session['role'] = account['role']
+                    # redirect to home page
+                    return redirect(url_for('home'))
+                else:
+                    # Account is inactive
+                    return render_template('login.html', error = 'Sorry, your account is inactive. Please contact admin for more information') 
             else:
-                # Password wrong, redirect to login page
+                # Password wrong, render login page again
                 return render_template('login.html', error = 'Incorrect username or password') 
 
         except Exception:
-            return render_template('error.html', error = 'Something went wrong. Please try again later.')
+            return render_template('error.html', error = 'Something went wrong. Please try again later')
         
 @app.route('/logout')
 def logout():

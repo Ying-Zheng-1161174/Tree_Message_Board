@@ -27,6 +27,7 @@ def user_messages(username):
             cursor.execute('SELECT * FROM messages WHERE user_id = %s', (session['id'],))
             messages = cursor.fetchall()
             return render_template('user_messages.html', messages = messages)
+        
         except Exception:
             return render_template('error.html', error = 'Something went wrong. Please try again later.') 
     else:
@@ -42,6 +43,7 @@ def user_messages(username):
             # If delete by moderator or admin from the details page, redirect them to home page
             else:
                 return redirect(url_for('home'))
+            
         except Exception:
             return render_template('error.html', error = 'Something went wrong. Please try again later.') 
 
@@ -53,6 +55,7 @@ def user_replies(username):
     cursor = getCursor()
     if request.method == 'GET':
         try:
+            # Display user replies
             cursor.execute('''
                            SELECT r.reply_id, r.message_id, r.content, r.created_at,
                            m.title AS message_title FROM replies r
@@ -60,9 +63,9 @@ def user_replies(username):
                            messages m ON r.message_id = m.message_id
                            WHERE r.user_id = %s
                            ''', (session['id'],))
-            replies = cursor.fetchall()
-            
+            replies = cursor.fetchall()          
             return render_template('user_replies.html', replies = replies)
+        
         except Exception:
             return render_template('error.html', error = 'Something went wrong. Please try again later.') 
     else:
@@ -72,10 +75,13 @@ def user_replies(username):
         try:
             # Delete a reply
             cursor.execute('DELETE FROM replies WHERE reply_id = %s', (replyID,))
+            # If delete from user replies page, redirect to same page
             if source == 'user_replies':
                 return redirect(url_for('user_replies', username = session['username']))
+            # If delete by moderator or admin from the details page, redirect them to details page
             else:
                 return redirect(url_for('message_detail', message_id= messageID))
+            
         except Exception:
                 return render_template('error.html', error = 'Something went wrong. Please try again later.') 
 
@@ -121,14 +127,15 @@ def profile(username):
             # Update user information
             cursor.execute('UPDATE users SET email = %s, first_name = %s, last_name = %s, birth_date = %s, location = %s, profile_image = %s WHERE user_id = %s', 
                             (email, firstName, lastName, birthDate, location, profileImagePath, session['id']))
-            session['message'] = 'Profile updated successfully!'
-    
+            session['message'] = 'Profile updated successfully!'  
             return redirect(url_for('profile', username=session['username']))
+        
         except Exception:
             return render_template('error.html', error = 'Something went wrong. Please try again later.')
     
-    # If it is a Get request, display user information 
+    
     try:
+        # If it is a Get request, display user information 
         cursor.execute('SELECT * FROM users WHERE username = %s', (username,))
         account = cursor.fetchone()
         msg = session.pop('message', None) 
@@ -166,11 +173,11 @@ def change_password(username):
         account = cursor.fetchone()
         # Check if the new pass is different to the old pass, and new pass matched confirm pass
         if oldPassword_hash != account['password_hash']:
-            error = 'Old password is incorrect'
+            error = 'Current password is incorrect'
         elif confirmPassword != newPassword:
-            error = 'password do not match'
+            error = 'New password do not match'
         elif oldPassword == newPassword:
-            error = 'New password cannot be the same as the old password'
+            error = 'New password cannot be the same as the current password'
         else:
             # Password is valid, update it to database
             password_hash = hashing.hash_value(newPassword, PASSWORD_SALT)  

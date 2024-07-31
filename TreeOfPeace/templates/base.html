@@ -38,6 +38,7 @@
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
           <ul class="navbar-nav ms-auto">
+            <!-- Display login and sign up when user is not logged in -->
             {% if 'loggedin' not in session %}
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('login') }}">Login</a>
@@ -45,6 +46,7 @@
             <li class="nav-item">
               <a class="nav-link" href="{{ url_for('register') }}">Sign up</a>
             </li>
+            <!-- Display other buttons after logged in -->
             {% else %}
             <li class="nav-item d-lg-none">
               <a
@@ -109,6 +111,7 @@
                   Replies
                 </a>
               </li>
+              <!-- Only display users section when user is admin -->
               {% if session['role'] == 'admin' %}
               <li class="nav-item">
                 <a

@@ -100,6 +100,7 @@ def add_reply(message_id):
                             VALUES (%s, %s, %s, CURRENT_TIMESTAMP)
                             ''', (message_id, user_id, reply_content))
             return redirect(url_for('message_detail', message_id=message_id))
+        
         except Exception:
             return render_template('error.html', error = 'Something went wrong. Please try again later.')
 
@@ -133,5 +134,6 @@ def add_message(username = None):
 
                 # Redirect to new message detail page
                 return redirect(url_for('message_detail', message_id=message_id))
+            
             except Exception:
                 return render_template('error.html', error = 'Something went wrong. Please try again later.')

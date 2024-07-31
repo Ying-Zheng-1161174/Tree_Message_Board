@@ -67,7 +67,8 @@ Enjoy!
 2. The only way to create 'moderator' and 'admin' roles is to insert them directly into the database.
 3. Admins and Moderators can delete anyone's messages and replies.
 4. Admins can modify a user's role and status.
-5. You can register a new account or use the existing accounts to try it out. Usernames and passwords are as follows:
+5. Inactive user cannot log in.
+6. You can register a new account or use the existing accounts to try it out. Usernames and passwords are as follows:
 
 ```
 member1 : member1pass

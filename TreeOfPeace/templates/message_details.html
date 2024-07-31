@@ -1,5 +1,8 @@
-{% extends 'base.html' %} {% block title %}Messages{% endblock %} {% block
-content %}
+{% extends 'base.html' %} 
+{% block title %} Messages {% endblock %} 
+
+{% block content %}
+
 <div class="container mt-4">
   <!-- Display message details -->
   {% if message %}
@@ -22,6 +25,7 @@ content %}
         </small>
       </div>
     </div>
+
     <!-- Only moderator or admin can delete a message -->
     {% if session['loggedin'] and session['role'] in ['moderator','admin'] %}
     <div class="card-footer d-flex justify-content-end align-items-center">
@@ -64,6 +68,7 @@ content %}
           <small class="text-muted">{{ reply.reply_created_at }}</small>
         </div>
         <div class="mb-2">
+
           <!-- Only moderator or admin can delete a reply -->
           {% if session['loggedin'] and session['role'] in ['moderator','admin']
           %}
@@ -93,6 +98,7 @@ content %}
   <p>No replies yet</p>
   {% endif %}
 
+  <!-- Create a reply textarea -->
   <div class="card">
     <div class="card-body">
       <h4 class="card-title">Add a reply</h4>
